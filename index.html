@@ -95,14 +95,14 @@
 <script>
 (function(){
   /* ---------------- TUNABLE DIALS ---------------- */
-  var SPEED   = 1.0;   // how fast the brain "breathes" (higher = faster)
+  var SPEED   = 3;   // how fast the brain "breathes" (higher = faster)
   var AMP     = 5;     // how far each node drifts from its spot
   var COUNT   = 150;   // number of nodes (lower = sparser)
-  var R       = 95;    // resting link reach between nodes
+  var R       = 130;    // resting link reach between nodes
   var CB      = 200;   // cursor burst reach (the zeng lines), in screen px
-  var CR      = 150;   // how close a node lights up to the cursor, in screen px
-  var GLOW_R  = 170;   // size of the soft glow pool around the cursor
-  var BOX     = 0.72;  // how wide the brain is (share of screen width) — bigger = bigger brain
+  var CR      = 190;   // how close a node lights up to the cursor, in screen px
+  var GLOW_R  = 0;   // size of the soft glow pool around the cursor
+  var BOX     = 1.15;  // how wide the brain is (share of screen width) — bigger = bigger brain
   /* ----------------------------------------------- */
 
   var root=document.documentElement;
