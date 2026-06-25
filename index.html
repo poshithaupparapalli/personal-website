@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>poshitha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F9;
+    --ink:#15284C;
+    --ink-soft:#5B6889;
+    --line:rgba(21,40,76,.16);
+  }
+  html[data-theme="dark"]{
+    --bg:#0A1830;
+    --ink:#E9EDF7;
+    --ink-soft:#92A0C2;
+    --line:rgba(233,237,247,.20);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;line-height:1.65;
+    transition:background .4s ease,color .4s ease;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  #web{position:fixed;inset:0;z-index:0;}
+
+  .toggle{position:fixed;top:22px;right:24px;z-index:3;
+    width:38px;height:38px;border:1px solid var(--line);border-radius:50%;
+    background:transparent;color:var(--ink-soft);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .25s,border-color .25s;}
+  .toggle:hover{color:var(--ink);border-color:var(--ink);}
+  .toggle svg{width:17px;height:17px;}
+
+  .main{position:relative;z-index:1;min-height:100vh;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:6vw;padding:0 8vw;pointer-events:none;}
+  .main a,.main button{pointer-events:auto;}
+
+  nav{display:flex;flex-direction:column;gap:15px;}
+  nav a{font-variant-caps:small-caps;letter-spacing:.12em;font-size:.95rem;
+    color:var(--ink-soft);text-decoration:none;width:max-content;
+    transition:color .2s;}
+  nav a:hover{color:var(--ink);}
+
+  .intro{max-width:430px;}
+  .intro .lead{font-size:1.05rem;font-weight:500;margin:0 0 14px;}
+  .intro p{margin:0 0 16px;font-size:.98rem;color:var(--ink);}
+  .intro .layers{color:var(--ink-soft);font-style:italic;}
+  .find{display:flex;gap:18px;margin-top:22px;flex-wrap:wrap;}
+  .find a{font-variant-caps:small-caps;letter-spacing:.08em;font-size:.86rem;
+    color:var(--ink-soft);text-decoration:none;
+    border-bottom:1px solid var(--line);padding-bottom:2px;transition:.2s;}
+  .find a:hover{color:var(--ink);border-color:var(--ink);}
+
+  @media (max-width:780px){
+    .main{flex-direction:column;align-items:flex-start;justify-content:center;
+      gap:42px;padding:120px 9vw 80px;}
+    .intro{max-width:none;}
+  }
+</style>
+</head>
+<body>
+  <canvas id="web" aria-hidden="true"></canvas>
+
+  <button class="toggle" id="toggle" aria-label="Switch to dark mode">
+    <svg id="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg>
+  </button>
+
+  <div class="main">
+    <nav>
+      <a href="#">projects</a>
+      <a href="#">writings</a>
+      <a href="#">pictures</a>
+      <a href="#">about me</a>
+    </nav>
+
+    <div class="intro">
+      <p class="lead">hi, i'm poshitha.</p>
+      <p>i study computer science and finance with a math minor at lehigh. i'm especially interested in human-brain interfaces, reinforcement learning, math, computer vision, and reasoning. right now i'm working with a very cool founder to build out an AI application for small-business owners. i also spend time thinking and reading about which companies are leading AI innovation in a safe and ethical way.</p>
+      <div class="find">
+        <a href="mailto:pou228@lehigh.edu">email</a>
+        <a href="#">github</a>
+        <a href="https://www.linkedin.com/in/poshithar/">linkedin</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  /* ---------------- TUNABLE DIALS ---------------- */
+  var SPEED   = 1.0;   // how fast the brain "breathes" (higher = faster)
+  var AMP     = 5;     // how far each node drifts from its spot
+  var COUNT   = 150;   // number of nodes (lower = sparser)
+  var R       = 95;    // resting link reach between nodes
+  var CB      = 200;   // cursor burst reach (the zeng lines), in screen px
+  var CR      = 150;   // how close a node lights up to the cursor, in screen px
+  /* ----------------------------------------------- */
+
+  var root=document.documentElement;
+  var btn=document.getElementById('toggle');
+  var icon=document.getElementById('icon');
+  var MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+  var SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+
+  var theme='light';
+  try{ var saved=localStorage.getItem('theme'); if(saved) theme=saved; }catch(e){}
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function apply(){
+    root.setAttribute('data-theme',theme);
+    icon.innerHTML = theme==='dark' ? SUN : MOON;
+    btn.setAttribute('aria-label', theme==='dark' ? 'Switch to light mode':'Switch to dark mode');
+    palette();
+  }
+  btn.addEventListener('click',function(){
+    theme = theme==='dark' ? 'light':'dark';
+    try{ localStorage.setItem('theme',theme); }catch(e){}
+    apply(); if(reduce) draw(0);
+  });
+
+  // ---- brain silhouette (union of ellipses, design space 1000x700) ----
+  var SHAPES=[
+    {cx:500,cy:330,rx:300,ry:225},
+    {cx:235,cy:340,rx:150,ry:150},
+    {cx:360,cy:185,rx:135,ry:135},
+    {cx:545,cy:165,rx:145,ry:145},
+    {cx:710,cy:215,rx:140,ry:140},
+    {cx:770,cy:360,rx:160,ry:150},
+    {cx:380,cy:470,rx:130,ry:130},
+    {cx:545,cy:480,rx:140,ry:135},
+    {cx:780,cy:520,rx:108,ry:88},
+    {cx:700,cy:600,rx:40,ry:66}
+  ];
+  var DW=1000, DH=700;
+  function inside(x,y){
+    for(var i=0;i<SHAPES.length;i++){
+      var s=SHAPES[i], dx=(x-s.cx)/s.rx, dy=(y-s.cy)/s.ry;
+      if(dx*dx+dy*dy<=1) return true;
+    } return false;
+  }
+
+  var canvas=document.getElementById('web'), ctx=canvas.getContext('2d');
+  var W=0,H=0,scale=1,offX=0,offY=0,nodes=[],pairs=[],cursor=null;
+  var NODE,LINK,GLOW;
+
+  function palette(){
+    if(theme==='dark'){ NODE='150,178,228'; LINK='130,158,212'; GLOW=true; }
+    else { NODE='21,40,76'; LINK='21,40,76'; GLOW=false; }
+  }
+
+  function init(){
+    var r=canvas.getBoundingClientRect(); W=r.width; H=r.height;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    // fit the brain into a left-of-center box, floating with margin
+    var boxW = W<780 ? W*0.86 : W*0.55;
+    scale = boxW/DW;
+    offX = W<780 ? (W-boxW)/2 : W*0.05;
+    offY = (H - DH*scale)/2;
+
+    var n = W<780 ? 95 : COUNT, tries=0, max=n*70;
+    nodes=[];
+    while(nodes.length<n && tries<max){
+      tries++;
+      var x=60+Math.random()*(DW-120), y=50+Math.random()*(DH-90);
+      if(inside(x,y)) nodes.push({bx:x,by:y,x:x,y:y,
+        ph:Math.random()*6.28, sp:0.5+Math.random()*0.7, r:1.6+Math.random()*1.2});
+    }
+    // resting neighbour links (computed once on base positions)
+    pairs=[]; var R2=R*R;
+    for(var i=0;i<nodes.length;i++)
+      for(var j=i+1;j<nodes.length;j++){
+        var dx=nodes[i].bx-nodes[j].bx, dy=nodes[i].by-nodes[j].by;
+        if(dx*dx+dy*dy<=R2) pairs.push([i,j]);
+      }
+  }
+
+  function PX(n){ return offX + n.x*scale; }
+  function PY(n){ return offY + n.y*scale; }
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    // breathe (oscillate around base so the brain shape holds)
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      if(reduce){ n.x=n.bx; n.y=n.by; }
+      else{ n.x=n.bx+Math.sin(t*0.0006*SPEED*n.sp+n.ph)*AMP;
+            n.y=n.by+Math.cos(t*0.00052*SPEED*n.sp+n.ph)*AMP; }
+    }
+    // resting links
+    for(var p=0;p<pairs.length;p++){
+      var a=nodes[pairs[p][0]], b=nodes[pairs[p][1]];
+      ctx.strokeStyle='rgba('+LINK+','+(theme==='dark'?0.12:0.09)+')';
+      ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PX(a),PY(a)); ctx.lineTo(PX(b),PY(b)); ctx.stroke();
+    }
+    // zeng-style cursor bursts
+    if(cursor){
+      var CB2=CB*CB;
+      for(var c=0;c<nodes.length;c++){
+        var px=PX(nodes[c]), py=PY(nodes[c]);
+        var dx=px-cursor.x, dy=py-cursor.y, d2=dx*dx+dy*dy;
+        if(d2<CB2){
+          var al=(1-Math.sqrt(d2)/CB)*(theme==='dark'?0.55:0.42);
+          ctx.strokeStyle='rgba('+LINK+','+al.toFixed(3)+')';
+          ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(cursor.x,cursor.y); ctx.lineTo(px,py); ctx.stroke();
+        }
+      }
+    }
+    // nodes (individually light up near cursor)
+    var CR2=CR*CR;
+    for(var k=0;k<nodes.length;k++){
+      var nd=nodes[k], px2=PX(nd), py2=PY(nd), boost=0;
+      if(cursor){
+        var ex=px2-cursor.x, ey=py2-cursor.y, dd=ex*ex+ey*ey;
+        if(dd<CR2) boost=1-Math.sqrt(dd)/CR;
+      }
+      var alpha=(theme==='dark'?0.42:0.34)+boost*0.6;
+      if(GLOW){ ctx.shadowColor='rgba('+NODE+','+(0.5+boost*0.4)+')'; ctx.shadowBlur=6+boost*8; }
+      else { ctx.shadowBlur=boost>0?boost*7:0; ctx.shadowColor='rgba('+NODE+',0.5)'; }
+      ctx.fillStyle='rgba('+NODE+','+alpha.toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(px2,py2,nd.r*(1+boost*0.8),0,Math.PI*2); ctx.fill();
+    }
+    ctx.shadowBlur=0;
+  }
+
+  var raf=null;
+  function loop(t){ draw(t); raf=requestAnimationFrame(loop); }
+  function start(){
+    init();
+    if(reduce){ draw(0); }
+    else { if(raf) cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); }
+  }
+
+  window.addEventListener('mousemove',function(e){ cursor={x:e.clientX,y:e.clientY}; if(reduce) draw(0); });
+  window.addEventListener('mouseout',function(){ cursor=null; if(reduce) draw(0); });
+  window.addEventListener('touchmove',function(e){ var t=e.touches[0]; cursor={x:t.clientX,y:t.clientY}; if(reduce) draw(0); },{passive:true});
+  window.addEventListener('touchend',function(){ cursor=null; });
+
+  var rt;
+  window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(start,150); });
+
+  apply();
+  start();
+})();
+</script>
+</body>
+</html>
