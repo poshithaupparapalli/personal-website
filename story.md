@@ -1,4 +1,4 @@
-# poshitha's site - story notes
+# story notes
 
 ## The spine
 "Neurons that fire together, wire together."
@@ -8,15 +8,3 @@ Each place wired into who i am today.
 ## Inspo reference
 - Aleph (brain lab site): dark bg, actual ultrasound brain scan as hero visual, sparse reverent text, scientific + emotional
 - Ideas on the table: hand-gesture CV control, brain passage game, interactive node map, simple single page
-
-## Chapter 1: Tirupati
-
-## Chapter 2: JPIS
-
-## Chapter 3: Lehigh
-
-## Chapter 4: SF
-
-## Projects
-
-## Through-lines & themes
