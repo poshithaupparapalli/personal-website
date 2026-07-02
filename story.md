@@ -1,4 +1,4 @@
-# poshitha's site — story notes
+# poshitha's site - story notes
 
 ## The spine
 "Neurons that fire together, wire together."
@@ -11,19 +11,12 @@ Each place wired into who i am today.
 
 ## Chapter 1: Tirupati
 
-
 ## Chapter 2: Boarding School
-
 
 ## Chapter 3: Lehigh
 
-
 ## Chapter 4: SF
 
-
-
 ## Projects
-
-
 
 ## Through-lines & themes
