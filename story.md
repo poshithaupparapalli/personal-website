@@ -11,7 +11,7 @@ Each place wired into who i am today.
 
 ## Chapter 1: Tirupati
 
-## Chapter 2: Boarding School
+## Chapter 2: JPIS
 
 ## Chapter 3: Lehigh
 
