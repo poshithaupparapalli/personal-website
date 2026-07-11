@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('writings')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+<Base title="writings · poshitha">
+  <div class="page">
+    <h1>writings</h1>
+    <p class="sub">essays, notes, thoughts. mostly thoughts.</p>
+
+    <ul class="posts">
+      {posts.map((p) => (
+        <li>
+          <a href={`/writings/${p.id}/`}>{p.data.title}</a>
+          {p.data.blurb && <span class="muted"> — {p.data.blurb}</span>}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <style>
+    .posts{list-style:none;padding:0;margin:0;}
+    .posts li{padding:10px 0;border-bottom:1px solid var(--line);}
+  </style>
+</Base>

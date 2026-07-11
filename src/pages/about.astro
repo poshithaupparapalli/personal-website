@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+
+const places = [
+  ['tirupati', 'small temple town where it started'],
+  ['jaipur (JOIS)', "boarding school. it's a palace. literally."],
+  ['lehigh', 'cs + finance, math minor'],
+  ['sf', 'now — interning, building'],
+];
+---
+<Base title="about · poshitha">
+  <div class="page">
+    <h1>about</h1>
+    <p class="sub">neurons that fire together, wire together</p>
+
+    <p>four places wired me into who i am. the plan for this page is a map where
+    each one is a node you can tap — a photo, a few lines, what it wired in.</p>
+
+    <ul class="places">
+      {places.map(([name, line]) => (
+        <li>
+          <span class="place">{name}</span>
+          <span class="muted"> — {line}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <style>
+    .places{list-style:none;padding:0;margin:26px 0 0;}
+    .places li{padding:10px 0;border-bottom:1px solid var(--line);}
+    .place{font-weight:500;}
+  </style>
+</Base>

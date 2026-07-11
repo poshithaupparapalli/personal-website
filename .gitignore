@@ -1,0 +1,10 @@
+# deps
+node_modules/
+node_modules.nosync/
+
+# build output
+dist/
+.astro/
+
+# os junk
+.DS_Store
