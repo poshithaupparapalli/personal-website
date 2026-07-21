@@ -68,11 +68,13 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
 
   <script>
     /* ---------------- TUNABLE DIALS ---------------- */
-    var STEP    = 3.4;  // sampling grid, px — smaller = denser
-    var SPECKS  = 900;  // ambient dust around the scan
-    var CURSOR  = 180;  // cursor glow radius, px
-    var TWINKLE = 1;    // shimmer speed
-    var GLOW    = 1;    // bloom on the bright particles at night
+    var STEP    = 4;      // sampling grid, px — smaller = denser
+    var SPECKS  = 700;    // ambient dust around the scan
+    var CURSOR  = 180;    // cursor glow radius, px
+    var TWINKLE = 1;      // shimmer speed
+    var GLOW    = 1;      // halo size on the bright particles at night
+    var BUDGET  = 26000;  // hard cap on particles. do not raise this —
+                          // the draw loop runs every one of them at 60fps
     /* ----------------------------------------------- */
 
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -85,8 +87,29 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     var PAL_L = ['242,113,28', '235,62,98', '168,66,235', '92,98,240', '38,118,235'];
     var PAL_D = ['255,158,70', '255,105,125', '216,108,255', '122,132,255', '86,156,255'];
     var PAL = PAL_L;
+
+    // each colour gets baked into a little radial-gradient sprite once, then
+    // every particle is a single drawImage. way cheaper than arc+fill per dot,
+    // and the soft edge gives the glow for free
+    var SPRITE = 32, sprites: HTMLCanvasElement[] = [];
+    function bakeSprites() {
+      sprites = PAL.map(function (rgb) {
+        var s = document.createElement('canvas');
+        s.width = s.height = SPRITE;
+        var c = s.getContext('2d')!;
+        var g = c.createRadialGradient(SPRITE / 2, SPRITE / 2, 0, SPRITE / 2, SPRITE / 2, SPRITE / 2);
+        g.addColorStop(0, 'rgba(' + rgb + ',1)');
+        g.addColorStop(0.35, 'rgba(' + rgb + ',0.85)');
+        g.addColorStop(1, 'rgba(' + rgb + ',0)');
+        c.fillStyle = g;
+        c.fillRect(0, 0, SPRITE, SPRITE);
+        return s;
+      });
+    }
+
     function palette() {
       PAL = document.documentElement.getAttribute('data-theme') === 'dark' ? PAL_D : PAL_L;
+      bakeSprites();
     }
     new MutationObserver(function () { palette(); draw(performance.now()); })
       .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -94,15 +117,11 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     // particle radii, near/mid/far — the scan is drawn as dots, like the real thing
     var SIZES = [0.55, 0.95, 1.6];
 
+    var placed = 0;
+
     function addDot(bx: number, x: number, y: number, c: number, a: number, z: number) {
-      // keep the words readable — dust fades in gradually below the text,
-      // no hard edge
-      if (y < H * 0.56 && x > W * 0.24 && x < W * 0.76) {
-        var t = Math.max(0, y / (H * 0.56));
-        var keep = 0.08 + 0.92 * t * t;
-        if (Math.random() > keep) return;
-        a *= 0.3 + 0.7 * t;
-      }
+      if (placed >= BUDGET) return;
+      placed++;
       buckets[bx].push({
         x: x, y: y, c: c, a: a, z: z,
         r: SIZES[bx] * (0.75 + Math.random() * 0.6),
@@ -125,11 +144,22 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       var sw = im.width * opts.cropW, sh = im.height * opts.cropH;
       var sx = (im.width - sw) / 2, sy = (im.height - sh) / 2 + im.height * 0.01;
 
-      // fit into the lower part of the screen, big
-      var bh = H * (mobile ? 0.52 : 0.8);
-      var bw = bh * (sw / sh);
-      if (bw > W * 0.96) { bw = W * 0.96; bh = bw * (sh / sw); }
-      var bx0 = (W - bw) / 2, by0 = H * 0.98 - bh;
+      // sits in the space under the intro copy — never behind the words.
+      // measured off the real text so it holds up at any width
+      var top = H * 0.42;
+      var st = document.querySelector('.statement');
+      if (st) {
+        var sr = st.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
+        top = sr.bottom - cr.top + (mobile ? 18 : 30);
+      }
+      // runs off the bottom of the fold, the way a scan gets cropped by its frame
+      var bh = (H * (mobile ? 1.08 : 1.34)) - top;
+      // stretched wide — the scan should sprawl across the page, not sit in a
+      // neat portrait box
+      var bw = bh * (sw / sh) * (mobile ? 1.15 : 1.3);
+      if (bw > W * 1.06) { bw = W * 1.06; }
+      // pushed right of centre — dead centre reads like a logo, not a scan
+      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.045), by0 = top;
 
       var gw = Math.max(2, Math.round(bw / step)), gh = Math.max(2, Math.round(bh / step));
       var off = document.createElement('canvas');
@@ -138,6 +168,11 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       octx.drawImage(im, sx, sy, sw, sh, 0, 0, gw, gh);
       var data = octx.getImageData(0, 0, gw, gh).data;
 
+      // brightness of every cell that clears the floor, so the quota below can
+      // thin evenly. hard-stopping at the budget mid-scan would just delete
+      // the bottom of the brain
+      var vals = new Float32Array(gw * gh);
+      var candidates = 0;
       for (var gy = 0; gy < gh; gy++) {
         for (var gx = 0; gx < gw; gx++) {
           // elliptical mask — kills the skull ring left by the square crop
@@ -147,11 +182,25 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
           var v = (data[i] * 0.35 + data[i + 1] * 0.5 + data[i + 2] * 0.15) / 255;
           v = Math.min(1, Math.pow(v, opts.gamma) * opts.gain);
           if (v < opts.floor) continue;
-          if (Math.random() > opts.keep + v * (1 - opts.keep)) continue;
+          vals[gy * gw + gx] = v;
+          candidates++;
+        }
+      }
 
-          var x = bx0 + (gx + 0.5) / gw * bw + (Math.random() - 0.5) * step * 1.4;
-          var y = by0 + (gy + 0.5) / gh * bh + (Math.random() - 0.5) * step * 1.4;
-          opts.emit(x, y, v);
+      // thin the whole field by one ratio so the scan stays even at any size
+      var quota = opts.quota || BUDGET;
+      var ratio = candidates > quota ? quota / candidates : 1;
+
+      for (var gy2 = 0; gy2 < gh; gy2++) {
+        for (var gx2 = 0; gx2 < gw; gx2++) {
+          var v2 = vals[gy2 * gw + gx2];
+          if (!v2) continue;
+          var keep = (opts.keep + v2 * (1 - opts.keep)) * ratio;
+          if (Math.random() > keep) continue;
+
+          var x = bx0 + (gx2 + 0.5) / gw * bw + (Math.random() - 0.5) * step * 1.4;
+          var y = by0 + (gy2 + 0.5) / gh * bh + (Math.random() - 0.5) * step * 1.4;
+          opts.emit(x, y, v2);
         }
       }
       return { bx0: bx0, by0: by0, bw: bw, bh: bh };
@@ -159,26 +208,30 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
 
     function gen() {
       buckets = [[], [], []];
+      placed = 0;
       if (loaded < 2) return;
       var mobile = W < 600;
 
-      // layer 1: tissue — faint, cool, far away. just enough to suggest a brain
-      var rect = sample(tissue, {
-        cropW: 0.54, cropH: 0.6, step: 1.5, gamma: 0.9, gain: 1, floor: 0.1, keep: 0.06,
-        emit: function (x: number, y: number, v: number) {
-          var c = v > 0.55 ? 3 : 4; // blues only — it sits behind everything
-          addDot(0, x, y, c, 0.07 + v * 0.22, 0.3 + v * 0.2);
-        },
-      });
-
-      // layer 2: vasculature — bright, warm, close. the aleph streaks.
-      // sampled fine so thin arteries stay continuous instead of dotty
+      // vasculature first — it's the layer that matters, so it gets first
+      // claim on the particle budget. sampled fine so thin arteries stay
+      // continuous instead of breaking into dots
       sample(vessels, {
-        cropW: 0.82, cropH: 0.84, step: 0.55, gamma: 1.5, gain: 1.5, floor: 0.2, keep: 0.72,
+        cropW: 0.82, cropH: 0.84, step: 0.62, gamma: 1.5, gain: 1.5, floor: 0.2, keep: 0.7,
+        quota: 14000,
         emit: function (x: number, y: number, v: number) {
           var c = v > 0.62 ? 0 : v > 0.45 ? 1 : v > 0.3 ? 2 : 3; // orange → pink → purple
           if (Math.random() < 0.14) c = (c + 1) % 5;
           addDot(v > 0.6 ? 2 : v > 0.34 ? 1 : 0, x, y, c, 0.35 + v * 0.65, 0.75 + v * 0.5);
+        },
+      });
+
+      // tissue behind it — faint, cool, far away. just enough to suggest a brain
+      var rect = sample(tissue, {
+        cropW: 0.54, cropH: 0.6, step: 1.6, gamma: 0.9, gain: 1, floor: 0.1, keep: 0.06,
+        quota: 7000,
+        emit: function (x: number, y: number, v: number) {
+          var c = v > 0.55 ? 3 : 4; // blues only — it sits behind everything
+          addDot(0, x, y, c, 0.07 + v * 0.22, 0.3 + v * 0.2);
         },
       });
 
@@ -218,9 +271,11 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       // vessels burn bright the way they do in the real scan
       ctx.globalCompositeOperation = dark ? 'lighter' : 'source-over';
 
+      // sprites are soft-edged, so they need to be drawn bigger than the
+      // nominal radius for the core to read at the right size
+      var spread = dark ? 2.7 * GLOW : 2.6;
+
       for (var b = 0; b < 3; b++) {
-        // only the big foreground particles get bloom — it's expensive
-        ctx.shadowBlur = dark && b >= 1 ? (b === 2 ? 8 : 4) * GLOW : 0;
         var list = buckets[b];
         for (var i = 0; i < list.length; i++) {
           var d = list[i];
@@ -228,26 +283,24 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
           var a = d.a * (reduce ? 0.85 : 0.62 + 0.38 * Math.sin(T * d.sp + d.tw));
           // additive blending on black eats brightness — push it back up
           var r = d.r;
-          if (dark) { a *= 1.75; r *= 1.15; }
+          // just enough lift for black; more and the vessels clip to white
+          if (dark) { a *= 0.78; }
           if (cursor) {
             var ex = x - cursor.x, ey = y - cursor.y, dd = ex * ex + ey * ey;
             if (dd < CR2) {
               var near = 1 - Math.sqrt(dd) / CURSOR;
-              a += near * 0.6;
+              a += near * 0.55;
               r *= 1 + near * 0.5; // particles swell as you pass over them
             }
           }
           if (a <= 0.02) continue;
           if (a > 1) a = 1;
-          var col = 'rgba(' + PAL[d.c] + ',' + a.toFixed(3) + ')';
-          if (ctx.shadowBlur) ctx.shadowColor = col;
-          ctx.fillStyle = col;
-          ctx.beginPath();
-          ctx.arc(x, y, r, 0, 6.2832);
-          ctx.fill();
+          var s = r * spread;
+          ctx.globalAlpha = a;
+          ctx.drawImage(sprites[d.c], x - s, y - s, s * 2, s * 2);
         }
       }
-      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
     }
 
