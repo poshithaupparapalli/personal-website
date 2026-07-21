@@ -21,7 +21,7 @@ const fmt = (d: Date) =>
         <li>
           <span class="body">
             <a href={`/writings/${p.id}`}>{p.data.title}</a>
-            {p.data.blurb && <span class="note"> — {p.data.blurb}</span>}
+            {p.data.blurb && <span class="note">, {p.data.blurb}</span>}
           </span>
           <span class="meta">{fmt(p.data.date)}</span>
         </li>

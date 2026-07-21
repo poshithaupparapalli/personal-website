@@ -1,82 +1,167 @@
 ---
+import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
+
+// drop a square png/svg in public/logos/ named to match `logo` and it shows up
+const logo = (name?: string) => {
+  if (!name) return null;
+  for (const ext of ['svg', 'png', 'jpg']) {
+    if (fs.existsSync(`public/logos/${name}.${ext}`)) return `/logos/${name}.${ext}`;
+  }
+  return null;
+};
 
 const roles = [
   {
-    what: 'elevate',
-    note: 'software engineer',
-    when: 'now',
+    role: 'software engineer',
+    where: 'elevate',
     href: 'https://elevatevbsolutions.com/',
+    logo: 'elevate',
+    when: 'jun 2026 to now',
+    note: "building the ai core of elevate's first product, a tool that turns an intake conversation into a ranked delegation plan for small-business owners. claude api, python, next.js, stripe.",
   },
   {
-    what: 'kidron',
-    note: 'vc analyst',
-    when: 'now',
+    role: 'investment intern',
+    where: 'kidron capital',
     href: 'https://kidron-capital.com/wp-content/uploads/New_Kidron/kidron_homepage-2.html',
+    logo: 'kidron',
+    when: 'feb 2026 to now',
+    note: "diligence on women's health and healthcare startups for a $25m fund. clinical workflows, regulatory paths, and the memos that go to the gps.",
   },
   {
-    what: 'ford credit',
-    note: 'built credit risk models',
-    when: 'summer 2025',
+    role: 'credit valuation intern',
+    where: 'ford credit',
     href: 'https://credit.ford.com',
+    logo: 'ford',
+    when: 'may 2025 to jul 2025',
+    note: 'survival and hazard modeling for default, payoff, and closure in sas. kaplan-meier curves, proportional hazard decision code, and baseline validation across three portfolio segments under ifrs 9.',
+  },
+  {
+    role: 'tech lead',
+    where: 'save tuba',
+    href: 'https://savetuba.com/',
+    logo: 'savetuba',
+    when: 'jan 2025 to dec 2025',
+    note: "one of five fellows sent to kazakhstan to rebuild save tuba's operating model. built the pricing and partnership models, and pitched a pilot across 100+ public schools.",
+  },
+  {
+    role: 'fellow',
+    where: 'the dexterity global group',
+    href: 'https://www.dexterityglobal.org/',
+    logo: 'dexterity',
+    when: 'dec 2021 to now',
+    note: '',
   },
 ];
 
 const campus = [
   {
-    what: 'scholars of finance',
-    note: 'vp of member experience, lehigh chapter',
+    role: 'vp of member experience',
+    where: 'scholars of finance, lehigh',
     href: 'https://www.scholarsoffinance.org',
+    when: '',
+    note: '',
   },
   {
-    what: 'the research rundown',
-    note: "founder + research lead — what's moving in the markets, broken down",
+    role: 'founder + research lead',
+    where: 'the research rundown',
     href: 'https://lehighscholarsoffinance.substack.com/i/191091144/the-repricing-of-who-controls-ai-infrastructure',
+    when: '',
+    note: "a markets newsletter. what's moving, broken down.",
   },
-  { what: 'stem housing', note: 'resident assistant' },
+  { role: 'resident assistant', where: 'stem housing, lehigh', when: '', note: '' },
   {
-    what: 'south asian student association',
-    note: 'secretary',
+    role: 'secretary',
+    where: 'south asian student association',
     href: 'https://www.instagram.com/lehigh_sasa/',
+    when: '',
+    note: '',
   },
 ];
 ---
 <Base title="work · poshitha">
   <h1 class="page-title">work</h1>
 
-  <ul class="ledger">
+  <ul class="roles">
     {roles.map((r) => (
       <li>
-        <span class="body">
-          {r.href ? (
-            <a href={r.href} target="_blank" rel="noopener"><strong>{r.what}</strong></a>
+        <div class="row">
+          {logo(r.logo) ? (
+            <img class="mark" src={logo(r.logo)} alt="" />
           ) : (
-            <strong>{r.what}</strong>
+            <span class="mark blank" />
           )}
-          <span class="note"> — {r.note}</span>
-        </span>
-        <span class="meta">{r.when}</span>
+          <div class="text">
+            <div class="head">
+              <span class="role">{r.role}</span>
+              <span class="when">{r.when}</span>
+            </div>
+            <p class="where">
+              {r.href ? (
+                <a href={r.href} target="_blank" rel="noopener">{r.where}</a>
+              ) : (
+                r.where
+              )}
+            </p>
+            {r.note && <p class="note">{r.note}</p>}
+          </div>
+        </div>
       </li>
     ))}
   </ul>
 
   <h2>at lehigh</h2>
-  <ul class="ledger">
-    {campus.map((c) => (
+  <ul class="roles">
+    {campus.map((r) => (
       <li>
-        <span class="body">
-          {c.href ? (
-            <a href={c.href} target="_blank" rel="noopener"><strong>{c.what}</strong></a>
-          ) : (
-            <strong>{c.what}</strong>
-          )}
-          <span class="note"> — {c.note}</span>
-        </span>
+        <div class="row">
+          <span class="mark blank" />
+          <div class="text">
+            <div class="head">
+              <span class="role">{r.role}</span>
+              <span class="when">{r.when}</span>
+            </div>
+            <p class="where">
+              {r.href ? (
+                <a href={r.href} target="_blank" rel="noopener">{r.where}</a>
+              ) : (
+                r.where
+              )}
+            </p>
+            {r.note && <p class="note">{r.note}</p>}
+          </div>
+        </div>
       </li>
     ))}
   </ul>
 
   <style>
-    h2 { font-size: 1rem; font-weight: 600; margin: 44px 0 12px; }
+    .roles { list-style: none; margin: 0; padding: 0; }
+    .roles li { padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .roles li:last-child { border-bottom: none; }
+
+    .row { display: flex; gap: 16px; align-items: flex-start; }
+    .mark {
+      width: 30px; height: 30px; flex-shrink: 0; border-radius: 6px;
+      object-fit: contain; margin-top: 2px;
+    }
+    .mark.blank { visibility: hidden; }
+    .text { flex: 1; min-width: 0; }
+
+    .head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .role { font-weight: 600; font-size: 1.05rem; }
+    .when { color: var(--faint); font-size: 0.85rem; flex-shrink: 0; }
+    .where { color: var(--muted); margin: 1px 0 0; }
+    .note { color: var(--muted); margin: 10px 0 0; max-width: 62ch; font-size: 0.95rem; }
+
+    h2 { font-size: 1rem; font-weight: 600; margin: 46px 0 4px; }
+
+    @media (max-width: 600px) {
+      .mark, .mark.blank { display: none; }
+      .row { gap: 0; }
+    }
   </style>
 </Base>

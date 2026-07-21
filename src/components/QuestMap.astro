@@ -43,7 +43,7 @@ const { entries } = Astro.props;
     const at = WHERE[country];
     if (!at) { console.warn(`no centroid for "${country}" yet — add it to WHERE in QuestMap.astro`); continue; }
     const items = list
-      .map((e) => `<p class="popup-item">${e.title}${e.year ? ` <span class="yr">(${e.year})</span>` : ''}${e.note ? ` — ${e.note}` : ''}</p>`)
+      .map((e) => `<p class="popup-item">${e.title}${e.year ? ` <span class="yr">(${e.year})</span>` : ''}${e.note ? `, ${e.note}` : ''}</p>`)
       .join('');
     L.marker(at, {
       icon: L.divIcon({

@@ -18,7 +18,7 @@ const countries = [...new Set(films.map((f) => f.country.toLowerCase()))];
         <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
         <span class="body">
           <strong>{f.title}</strong>
-          {f.note && <span class="note"> — {f.note}</span>}
+          {f.note && <span class="note">, {f.note}</span>}
         </span>
         <span class="meta mono">{f.country} · {f.year}</span>
       </li>
