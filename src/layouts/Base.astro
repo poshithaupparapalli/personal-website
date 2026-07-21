@@ -21,6 +21,38 @@ const links = [
 ];
 const current = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href);
+
+// tells google this site is a person, and which accounts are the same person.
+// this is what makes a name search line up with the site
+const isHome = path === '/';
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Poshitha Upparapalli',
+  alternateName: 'Poshitha Reddy Upparapalli',
+  url: 'https://poshithaupparapalli.com',
+  jobTitle: 'Software Engineer',
+  description:
+    'Computer science and finance student at Lehigh University. Building AI for small-business owners, and interested in brain-computer interfaces, reinforcement learning, and computer vision.',
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Lehigh University',
+    sameAs: 'https://www.lehigh.edu',
+  },
+  knowsAbout: [
+    'computer vision',
+    'reinforcement learning',
+    'brain-computer interfaces',
+    'machine learning',
+    'formal verification',
+    'venture capital',
+  ],
+  sameAs: [
+    'https://github.com/poshithaupparapalli',
+    'https://www.linkedin.com/in/poshithar/',
+    'https://poshitha.substack.com',
+  ],
+};
 ---
 <html lang="en">
   <head>
@@ -39,6 +71,9 @@ const current = (href: string) =>
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    {isHome && (
+      <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    )}
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%231f2328'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

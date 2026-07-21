@@ -1,7 +1,7 @@
 ---
 title: 8 things i learned before i turned 18
 date: 2025-05-09
-blurb: written at 2am in the library, the week i turned 18
+blurb: a little cringe but i was 18 lol
 original: https://poshitha.substack.com/p/8-things-i-learned-before-i-turned
 originalName: my substack
 ---
