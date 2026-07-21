@@ -4,9 +4,14 @@ import Particles from '../components/Particles.astro';
 
 interface Props {
   title: string;
+  description?: string;
 }
-const { title } = Astro.props;
+const {
+  title,
+  description = 'poshitha upparapalli — computer science and finance at lehigh. building ai for small-business owners, and interested in brain-computer interfaces, reinforcement learning, and computer vision.',
+} = Astro.props;
 const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site ?? 'https://poshithaupparapalli.com');
 const links = [
   ['/', 'home'],
   ['/work', 'work'],
@@ -22,6 +27,18 @@ const current = (href: string) =>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="author" content="poshitha upparapalli" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="poshitha upparapalli" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%231f2328'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
