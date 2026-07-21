@@ -1,0 +1,23 @@
+[
+  {
+    "name": "sample dosa place",
+    "city": "tirupati",
+    "note": "waiting on the real list — this pin is a stand-in",
+    "lat": 13.6288,
+    "lng": 79.4192
+  },
+  {
+    "name": "sample chai stall",
+    "city": "jaipur",
+    "note": "waiting on the real list — this pin is a stand-in",
+    "lat": 26.9124,
+    "lng": 75.7873
+  },
+  {
+    "name": "sample burrito spot",
+    "city": "san francisco",
+    "note": "waiting on the real list — this pin is a stand-in",
+    "lat": 37.7599,
+    "lng": -122.4148
+  }
+]

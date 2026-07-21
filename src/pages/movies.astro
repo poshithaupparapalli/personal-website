@@ -1,36 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
-import quest from '../data/quest.json';
+import QuestMap from '../components/QuestMap.astro';
+import films from '../data/films.json';
 
-const films = quest.films;
-const books = quest.books;
-const countries = [...new Set(films.map((f) => f.country))];
-const TOTAL = 195;
+const countries = [...new Set(films.map((f) => f.country.toLowerCase()))];
 ---
-<Base title="movies & books · poshitha">
-  <div class="page">
-    <h1>movies & books</h1>
-    <p class="sub">the quest: a movie from every country in the world</p>
+<Base title="movies · poshitha">
+  <h1 class="page-title">movies</h1>
+  <p class="lede">the quest: a film from every country. {countries.length}/195 so far.</p>
 
-    <p class="count">{countries.length} / {TOTAL} countries</p>
+  <QuestMap entries={films} />
+  <div style="margin:0 0 40px"></div>
 
-    <ul class="log">
-      {films.map((f) => (
-        <li>
-          <span class="title">{f.title}</span>
-          <span class="muted"> — {f.country}, {f.year}</span>
-        </li>
-      ))}
-    </ul>
-
-    <p class="muted">the world map goes here — countries light up as the list grows.
-    books are joining too ({books.length} so far).</p>
-  </div>
-
-  <style>
-    .count{font-size:1.3rem;margin:0 0 20px;}
-    .log{list-style:none;padding:0;margin:0 0 34px;}
-    .log li{padding:8px 0;border-bottom:1px solid var(--line);}
-    .title{font-weight:500;}
-  </style>
+  <ul class="ledger">
+    {films.map((f, i) => (
+      <li>
+        <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
+        <span class="body">
+          <strong>{f.title}</strong>
+          {f.note && <span class="note"> — {f.note}</span>}
+        </span>
+        <span class="meta mono">{f.country} · {f.year}</span>
+      </li>
+    ))}
+  </ul>
 </Base>

@@ -1,34 +1,29 @@
 ---
 import Base from '../layouts/Base.astro';
-
-const places = [
-  ['tirupati', 'small temple town where it started'],
-  ['jaipur (JOIS)', "boarding school. it's a palace. literally."],
-  ['lehigh', 'cs + finance, math minor'],
-  ['sf', 'now — interning, building'],
-];
 ---
 <Base title="about · poshitha">
-  <div class="page">
-    <h1>about</h1>
-    <p class="sub">neurons that fire together, wire together</p>
+  <h1 class="page-title">more about me</h1>
+  <p class="lede">the person, not the resume.</p>
 
-    <p>four places wired me into who i am. the plan for this page is a map where
-    each one is a node you can tap — a photo, a few lines, what it wired in.</p>
+  <p>
+    i grew up in tirupati, a small temple town in the south of india.
+    then boarding school in jaipur — it's a palace, literally — then
+    lehigh for cs + finance with a math minor, and now san francisco.
+    every place rewired me a little.
+  </p>
+  <p>
+    off the clock i collect things: restaurants worth a detour, films
+    from countries i've never been to, film photos of places i have.
+  </p>
 
-    <ul class="places">
-      {places.map(([name, line]) => (
-        <li>
-          <span class="place">{name}</span>
-          <span class="muted"> — {line}</span>
-        </li>
-      ))}
-    </ul>
-  </div>
+  <ul class="trail">
+    <li><a href="/food">food</a> <span class="muted">— places i'd send you, on a map</span></li>
+    <li><a href="/movies">movies</a> <span class="muted">— the quest to watch a film from every country</span></li>
+    <li><a href="/photos">photos</a> <span class="muted">— from everywhere i've been</span></li>
+  </ul>
 
   <style>
-    .places{list-style:none;padding:0;margin:26px 0 0;}
-    .places li{padding:10px 0;border-bottom:1px solid var(--line);}
-    .place{font-weight:500;}
+    p { max-width: 56ch; margin: 0 0 18px; }
+    .trail { list-style: none; margin: 34px 0 0; padding: 0; display: grid; gap: 10px; }
   </style>
 </Base>

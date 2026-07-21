@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+
+const roles = [
+  {
+    what: 'building an AI application for small-business owners',
+    where: 'san francisco, with a very cool founder',
+    when: '2026 — now',
+  },
+];
+---
+<Base title="work · poshitha">
+  <h1 class="page-title">work</h1>
+  <p class="lede">where i've been putting the hours.</p>
+
+  <ul class="ledger">
+    {roles.map((r) => (
+      <li>
+        <span class="body">
+          <strong>{r.what}</strong>
+          <span class="note"> — {r.where}</span>
+        </span>
+        <span class="meta">{r.when}</span>
+      </li>
+    ))}
+  </ul>
+</Base>

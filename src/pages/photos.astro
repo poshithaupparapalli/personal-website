@@ -1,12 +1,41 @@
 ---
+import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
+
+const dir = 'public/photos';
+const photos = fs.existsSync(dir)
+  ? fs
+      .readdirSync(dir)
+      .filter((f) => /\.(jpe?g|png|webp|gif)$/i.test(f))
+      .sort()
+  : [];
+
+const caption = (f: string) => f.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
 ---
 <Base title="photos · poshitha">
-  <div class="page">
-    <h1>photos</h1>
-    <p class="sub">pictures i've taken</p>
-    <p class="muted">the plan: a grid of film prints here, and eventually a floating
-    cloud of pictures you can spin with your hand through the webcam. for now the
-    good ones are sitting on my camera roll, waiting.</p>
-  </div>
+  <h1 class="page-title">photos</h1>
+  <p class="lede">in roughly the order they happened.</p>
+
+  {photos.length === 0 ? (
+    <p class="muted">nothing here yet.</p>
+  ) : (
+    <div class="grid">
+      {photos.map((f, i) => (
+        <figure class="tape">
+          <img src={`/photos/${f}`} alt={caption(f)} loading="lazy" />
+          <figcaption class="mono">({i + 1}) {caption(f)}</figcaption>
+        </figure>
+      ))}
+    </div>
+  )}
+
+  <style>
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 34px 26px; padding-top: 10px;
+    }
+    figure.tape { margin: 0; }
+    figcaption { color: var(--faint); padding-top: 8px; }
+    .empty-note { color: var(--muted); margin: 0; max-width: 44ch; }
+  </style>
 </Base>

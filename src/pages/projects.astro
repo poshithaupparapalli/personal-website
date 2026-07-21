@@ -1,10 +1,28 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const projects = [
+  {
+    name: 'ai for small-business owners',
+    note: 'building the whole application out with a very cool founder. details soon.',
+    when: '2026 · in progress',
+  },
+];
 ---
 <Base title="projects · poshitha">
-  <div class="page">
-    <h1>projects</h1>
-    <p class="sub">things i've built and am building</p>
-    <p class="muted">the shelves go up first, then the work fills them in. coming soon.</p>
-  </div>
+  <h1 class="page-title">projects</h1>
+  <p class="lede">things i've built and am building.</p>
+
+  <ul class="ledger">
+    {projects.map((p, i) => (
+      <li>
+        <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
+        <span class="body">
+          <strong>{p.name}</strong>
+          <span class="note"> — {p.note}</span>
+        </span>
+        <span class="meta mono">{p.when}</span>
+      </li>
+    ))}
+  </ul>
 </Base>

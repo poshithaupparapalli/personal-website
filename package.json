@@ -3,11 +3,12 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "CI=true ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "build": "astro build",
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "leaflet": "^1.9.4"
   }
 }

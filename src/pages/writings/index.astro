@@ -5,24 +5,27 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('writings')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toLowerCase();
 ---
 <Base title="writings · poshitha">
-  <div class="page">
-    <h1>writings</h1>
-    <p class="sub">essays, notes, thoughts. mostly thoughts.</p>
+  <h1 class="page-title">writings</h1>
+  <p class="lede">essays and notes.</p>
 
-    <ul class="posts">
+  {posts.length === 0 ? (
+    <p class="muted">nothing published yet.</p>
+  ) : (
+    <ul class="ledger">
       {posts.map((p) => (
         <li>
-          <a href={`/writings/${p.id}/`}>{p.data.title}</a>
-          {p.data.blurb && <span class="muted"> — {p.data.blurb}</span>}
+          <span class="body">
+            <a href={`/writings/${p.id}`}>{p.data.title}</a>
+            {p.data.blurb && <span class="note"> — {p.data.blurb}</span>}
+          </span>
+          <span class="meta">{fmt(p.data.date)}</span>
         </li>
       ))}
     </ul>
-  </div>
-
-  <style>
-    .posts{list-style:none;padding:0;margin:0;}
-    .posts li{padding:10px 0;border-bottom:1px solid var(--line);}
-  </style>
+  )}
 </Base>

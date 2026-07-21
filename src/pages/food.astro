@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import spots from '../data/food.json';
+
+const cities = [...new Set(spots.map((s) => s.city))];
+---
+<Base title="food map · poshitha">
+  <h1 class="page-title">food</h1>
+  <p class="lede">places i'd send you — {spots.length} spots across {cities.length} cities.</p>
+
+  <div class="map-frame"><div id="map" class="map"></div></div>
+
+  <ul class="ledger">
+    {spots.map((s, i) => (
+      <li>
+        <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
+        <span class="body">
+          <strong>{s.name}</strong>
+          <span class="note"> — {s.note}</span>
+        </span>
+        <span class="meta mono">{s.city}</span>
+      </li>
+    ))}
+  </ul>
+
+  <script type="application/json" id="spots-data" set:html={JSON.stringify(spots)} />
+
+  <script>
+    import L from 'leaflet';
+    import 'leaflet/dist/leaflet.css';
+
+    const spots = JSON.parse(document.getElementById('spots-data')!.textContent!);
+    const map = L.map('map', { scrollWheelZoom: false, worldCopyJump: true });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      className: 'map-tiles',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const pts: [number, number][] = [];
+    for (const s of spots) {
+      pts.push([s.lat, s.lng]);
+      L.marker([s.lat, s.lng], {
+        icon: L.divIcon({
+          className: 'pin',
+          html: `<span class="pin-dot"></span><span class="pin-label">${s.name}</span>`,
+          iconAnchor: [6, 6],
+        }),
+      })
+        .addTo(map)
+        .bindPopup(
+          `<p class="popup-country">${s.name}</p><p class="popup-item">${s.note}<br><span class="yr">${s.city}</span></p>`
+        );
+    }
+    if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.3));
+    else map.setView([20, 0], 2);
+  </script>
+</Base>

@@ -1,0 +1,58 @@
+---
+// world map where countries get a pin once something from there
+// has been watched / read — shared by the movie + book pages
+interface Props {
+  entries: { title: string; year?: number; country: string; note?: string }[];
+}
+const { entries } = Astro.props;
+---
+<div class="map-frame"><div id="quest-map" class="map"></div></div>
+
+<script type="application/json" id="quest-data" set:html={JSON.stringify(entries)} />
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  // rough country centroids — add a line when a new country joins the quest
+  const WHERE: Record<string, [number, number]> = {
+    india: [21.0, 78.5], usa: [39.8, -98.6], uk: [54.0, -2.5], france: [46.6, 2.5],
+    italy: [42.8, 12.8], spain: [40.3, -3.7], germany: [51.1, 10.4], japan: [36.5, 138.0],
+    'south korea': [36.4, 127.9], china: [35.0, 103.8], iran: [32.6, 54.3], turkey: [39.0, 35.4],
+    russia: [56.0, 60.0], brazil: [-10.8, -53.0], mexico: [23.9, -102.5], argentina: [-35.0, -65.0],
+    indonesia: [-2.5, 118.0], thailand: [15.0, 101.0], nigeria: [9.1, 8.7], egypt: [26.6, 30.0],
+    australia: [-25.3, 134.4], canada: [56.1, -106.3], denmark: [56.0, 9.5], sweden: [62.0, 15.0],
+    poland: [52.1, 19.4], ireland: [53.2, -8.0], portugal: [39.6, -8.0], greece: [39.0, 22.0],
+    'sri lanka': [7.6, 80.7], pakistan: [30.0, 69.3], nepal: [28.2, 84.0], vietnam: [16.0, 107.8],
+  };
+
+  const entries = JSON.parse(document.getElementById('quest-data')!.textContent!);
+  const byCountry: Record<string, any[]> = {};
+  for (const e of entries) (byCountry[e.country.toLowerCase()] ??= []).push(e);
+
+  const map = L.map('quest-map', { scrollWheelZoom: false, worldCopyJump: true, minZoom: 2 })
+    .setView([22, 15], 2);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    className: 'map-tiles',
+    maxZoom: 10,
+  }).addTo(map);
+
+  for (const [country, list] of Object.entries(byCountry)) {
+    const at = WHERE[country];
+    if (!at) { console.warn(`no centroid for "${country}" yet — add it to WHERE in QuestMap.astro`); continue; }
+    const items = list
+      .map((e) => `<p class="popup-item">${e.title}${e.year ? ` <span class="yr">(${e.year})</span>` : ''}${e.note ? ` — ${e.note}` : ''}</p>`)
+      .join('');
+    L.marker(at, {
+      icon: L.divIcon({
+        className: 'pin',
+        html: `<span class="pin-dot"></span><span class="pin-label">${country} · ${list.length}</span>`,
+        iconAnchor: [6, 6],
+      }),
+    })
+      .addTo(map)
+      .bindPopup(`<p class="popup-country">${country}</p>${items}`);
+  }
+</script>
