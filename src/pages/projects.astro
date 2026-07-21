@@ -1,28 +1,87 @@
 ---
+import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
+
+// drop a screenshot in public/projects/ named to match `shot` and it shows up
+const shot = (name: string) => {
+  for (const ext of ['png', 'jpg', 'jpeg', 'webp', 'gif']) {
+    if (fs.existsSync(`public/projects/${name}.${ext}`)) return `/projects/${name}.${ext}`;
+  }
+  return null;
+};
 
 const projects = [
   {
-    name: '',
-    note: '',
-    when: '',
+    name: 'resonance',
+    shot: 'resonance',
+    href: 'https://github.com/poshithaupparapalli/yournewsreal',
+    what: 'a personalized news engine that pulls and ranks articles from 8+ sources every hour. ranking runs on cosine similarity, entity matching, and novelty, and it learns what you care about from how you read.',
+  },
+  {
+    name: 'trace',
+    shot: 'trace',
+    href: 'https://github.com/kripahsk-29/stanford-hackathon-project-2026',
+    what: 'helps young students with dyslexia with their speech. they read a sentence aloud, the app catches the words they struggled with, then computer vision lets them trace those letters in the air while saying them. built at a stanford hackathon.',
+  },
+  {
+    name: 'raiseit',
+    shot: 'raiseit',
+    href: 'https://github.com/poshithaupparapalli/raiseit',
+    what: "computer vision that spots raised hands in large lecture halls. yolov8 on a raspberry pi, trained on classroom footage i collected and labeled myself. funded through lehigh's baker institute pitch night.",
+  },
+  {
+    name: 'parkalot',
+    shot: 'parkalot',
+    href: 'https://github.com/poshithaupparapalli/parking_lot_lehigh_hackathon',
+    what: "shows which lots on lehigh's campus have spots open, so nobody circles for twenty minutes looking. built at a lehigh hackathon.",
   },
 ];
 ---
 <Base title="projects · poshitha">
   <h1 class="page-title">projects</h1>
-  <p class="lede"></p>
 
-  <ul class="ledger">
-    {projects.map((p, i) => (
+  <ul class="projects">
+    {projects.map((p) => (
       <li>
-        <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
-        <span class="body">
-          <strong>{p.name}</strong>
-          <span class="note">, {p.note}</span>
-        </span>
-        <span class="meta mono">{p.when}</span>
+        <div class="shot">
+          {shot(p.shot) && <img src={shot(p.shot)} alt={p.name} loading="lazy" />}
+        </div>
+        <div class="text">
+          <h2>
+            <a href={p.href} target="_blank" rel="noopener">{p.name}</a>
+          </h2>
+          {p.what && <p>{p.what}</p>}
+        </div>
       </li>
     ))}
   </ul>
+
+  <p class="more">
+    <a href="https://github.com/poshithaupparapalli?tab=repositories" target="_blank" rel="noopener">
+      everything else on github
+    </a>
+  </p>
+
+  <style>
+    .projects { list-style: none; margin: 0; padding: 0; }
+    .projects li {
+      display: grid; grid-template-columns: 300px 1fr; gap: 32px;
+      align-items: start; margin: 0 0 56px;
+    }
+    .shot img {
+      width: 100%; height: auto; display: block;
+      border-radius: 6px; border: 1px solid var(--line);
+    }
+    .text h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 8px; }
+    .text h2 a { text-decoration-color: var(--faint); }
+    .text p { color: var(--muted); margin: 0; max-width: 52ch; font-size: 0.95rem; }
+
+    .more { margin: 8px 0 0; }
+    .more a { color: var(--muted); }
+
+    @media (max-width: 700px) {
+      .projects li { grid-template-columns: 1fr; gap: 14px; margin-bottom: 44px; }
+      .shot:empty { display: none; }
+    }
+  </style>
 </Base>
