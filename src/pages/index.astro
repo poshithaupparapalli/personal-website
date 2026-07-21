@@ -128,9 +128,23 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     var SIZES = [0.55, 0.95, 1.6];
 
     var placed = 0;
+    // box around the words. the scan runs behind them, so inside this box the
+    // particles thin out and dim — the glow gets out of the way of the reading
+    var safe: { x0: number; x1: number; y0: number; y1: number } | null = null;
 
     function addDot(bx: number, x: number, y: number, c: number, a: number, z: number) {
       if (placed >= BUDGET) return;
+
+      if (safe && x > safe.x0 && x < safe.x1 && y > safe.y0 && y < safe.y1) {
+        // how deep into the text box this particle sits, 0 at the edge → 1 well
+        // inside. keeps the fade soft instead of a visible rectangle
+        var dx = Math.min(x - safe.x0, safe.x1 - x);
+        var dy = Math.min(y - safe.y0, safe.y1 - y);
+        var deep = Math.min(1, Math.min(dx, dy) / 100);
+        if (Math.random() < 0.62 * deep) return;
+        a *= 1 - 0.82 * deep;
+      }
+
       placed++;
       buckets[bx].push({
         x: x, y: y, c: c, a: a, z: z,
@@ -156,22 +170,29 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
 
       // starts under the whole block of copy — never behind the words.
       // measured off the real text so it holds up at any width
-      var top = H * 0.48;
-      var st = document.querySelector('.copy');
-      if (st) {
-        var sr = st.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
-        // rides up level with the last couple of lines on wide screens —
-        // it's clear of the words because it's pushed right
-        top = sr.bottom - cr.top + (mobile ? 26 : -56);
+      var vh = window.innerHeight;
+      var cr = canvas.getBoundingClientRect();
+      var copyEl = document.querySelector('.copy');
+      var paras = document.querySelectorAll('.copy p');
+      var top, bh;
+
+      if (mobile) {
+        top = copyEl ? copyEl.getBoundingClientRect().bottom - cr.top + 26 : H * 0.5;
+        bh = vh * 0.9;
+      } else {
+        // top of the scan lines up with the second paragraph
+        top = paras.length > 1
+          ? paras[1].getBoundingClientRect().top - cr.top
+          : H * 0.36;
+        // size is set on its own so nudging the position never rescales it
+        bh = vh * 0.97;
       }
-      // fills everything below the copy and runs off the bottom of the canvas
-      var bh = H - top;
-      // stretched wide — the scan should sprawl across the page, not sit in a
-      // neat portrait box
+
+      // stretched wide — the scan should sprawl, not sit in a neat portrait box
       var bw = bh * (sw / sh) * (mobile ? 1.15 : 1.3);
       if (bw > W * 1.06) { bw = W * 1.06; }
       // pushed right of centre — dead centre reads like a logo, not a scan
-      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.14), by0 = top;
+      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.18), by0 = top;
 
       var gw = Math.max(2, Math.round(bw / step)), gh = Math.max(2, Math.round(bh / step));
       var off = document.createElement('canvas');
@@ -223,6 +244,20 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       placed = 0;
       if (loaded < 2) return;
       var mobile = W < 600;
+
+      // measure the words so the scan can dim itself behind them
+      safe = null;
+      var head = document.querySelector('h1'), body = document.querySelector('.copy');
+      if (head && body) {
+        var cr0 = canvas.getBoundingClientRect();
+        var hr = head.getBoundingClientRect(), br = body.getBoundingClientRect();
+        safe = {
+          x0: Math.min(hr.left, br.left) - cr0.left - 24,
+          x1: Math.max(hr.right, br.right) - cr0.left + 24,
+          y0: Math.min(hr.top, br.top) - cr0.top - 24,
+          y1: Math.max(hr.bottom, br.bottom) - cr0.top + 24,
+        };
+      }
 
       // vasculature first — it's the layer that matters, so it gets first
       // claim on the particle budget. sampled fine so thin arteries stay
