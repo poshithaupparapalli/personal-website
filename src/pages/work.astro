@@ -3,10 +3,35 @@ import Base from '../layouts/Base.astro';
 
 const roles = [
   {
-    what: 'building an AI application for small-business owners',
-    where: 'san francisco, with a very cool founder',
-    when: '2026 — now',
+    what: 'elevate',
+    note: "building their first ai product for small-business owners",
+    when: 'now',
   },
+  {
+    what: 'kidron',
+    note: 'vc analyst — investing in femtech and biotech',
+    when: 'now',
+  },
+  {
+    what: 'ford credit',
+    note: 'built credit risk models',
+    when: 'summer 2025',
+    href: 'https://credit.ford.com',
+  },
+];
+
+const campus = [
+  {
+    what: 'scholars of finance',
+    note: 'vp of member experience, lehigh chapter',
+    href: 'https://www.scholarsoffinance.org',
+  },
+  {
+    what: 'the research rundown',
+    note: "writer — what's moving in the markets, broken down",
+  },
+  { what: 'stem housing', note: 'resident assistant' },
+  { what: 'south asian student association', note: 'secretary' },
 ];
 ---
 <Base title="work · poshitha">
@@ -17,11 +42,35 @@ const roles = [
     {roles.map((r) => (
       <li>
         <span class="body">
-          <strong>{r.what}</strong>
-          <span class="note"> — {r.where}</span>
+          {r.href ? (
+            <a href={r.href} target="_blank" rel="noopener"><strong>{r.what}</strong></a>
+          ) : (
+            <strong>{r.what}</strong>
+          )}
+          <span class="note"> — {r.note}</span>
         </span>
         <span class="meta">{r.when}</span>
       </li>
     ))}
   </ul>
+
+  <h2>at lehigh</h2>
+  <ul class="ledger">
+    {campus.map((c) => (
+      <li>
+        <span class="body">
+          {c.href ? (
+            <a href={c.href} target="_blank" rel="noopener"><strong>{c.what}</strong></a>
+          ) : (
+            <strong>{c.what}</strong>
+          )}
+          <span class="note"> — {c.note}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+
+  <style>
+    h2 { font-size: 1rem; font-weight: 600; margin: 44px 0 12px; }
+  </style>
 </Base>
