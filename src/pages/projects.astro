@@ -27,7 +27,7 @@ const projects = [
     name: 'raiseit',
     shot: 'raiseit',
     href: 'https://github.com/poshithaupparapalli/raiseit',
-    what: "computer vision that spots raised hands in large lecture halls. yolov8 on a raspberry pi, trained on classroom footage i collected and labeled myself. funded through lehigh's baker institute pitch night.",
+    what: "computer vision that spots raised hands in large lecture halls. yolov8 on a raspberry pi, trained on classroom footage we collected and labeled. funded through lehigh's baker institute pitch night.",
   },
   {
     name: 'parkalot',
@@ -42,10 +42,12 @@ const projects = [
 
   <ul class="projects">
     {projects.map((p) => (
-      <li>
-        <div class="shot">
-          {shot(p.shot) && <img src={shot(p.shot)} alt={p.name} loading="lazy" />}
-        </div>
+      <li class={shot(p.shot) ? '' : 'noshot'}>
+        {shot(p.shot) && (
+          <div class="shot">
+            <img src={shot(p.shot)} alt={p.name} loading="lazy" />
+          </div>
+        )}
         <div class="text">
           <h2>
             <a href={p.href} target="_blank" rel="noopener">{p.name}</a>
@@ -68,6 +70,9 @@ const projects = [
       display: grid; grid-template-columns: 300px 1fr; gap: 32px;
       align-items: start; margin: 0 0 56px;
     }
+    /* no screenshot yet, so the text takes the whole row instead of
+       leaving a hole where the image would be */
+    .projects li.noshot { grid-template-columns: 1fr; }
     .shot img {
       width: 100%; height: auto; display: block;
       border-radius: 6px; border: 1px solid var(--line);
