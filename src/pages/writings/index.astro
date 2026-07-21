@@ -2,8 +2,32 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
-const posts = (await getCollection('writings')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+// pieces that live somewhere else. anything written here on the site
+// picks itself up from src/content/writings/
+const elsewhere = [
+  {
+    title: 'the repricing of who controls ai infrastructure',
+    date: new Date('2026-03-16'),
+    blurb: 'in sof research rundown #1',
+    href: 'https://lehighscholarsoffinance.substack.com/i/191091144/the-repricing-of-who-controls-ai-infrastructure',
+  },
+  {
+    title: '8 things i learned before i turned 18',
+    date: new Date('2025-05-09'),
+    blurb: '',
+    href: 'https://substack.com/home/post/p-162710596',
+  },
+];
+
+const local = (await getCollection('writings')).map((p) => ({
+  title: p.data.title,
+  date: p.data.date,
+  blurb: p.data.blurb ?? '',
+  href: `/writings/${p.id}`,
+}));
+
+const posts = [...local, ...elsewhere].sort(
+  (a, b) => b.date.valueOf() - a.date.valueOf()
 );
 
 const fmt = (d: Date) =>
@@ -11,21 +35,40 @@ const fmt = (d: Date) =>
 ---
 <Base title="writings · poshitha">
   <h1 class="page-title">writings</h1>
-  <p class="lede">essays and notes.</p>
 
   {posts.length === 0 ? (
     <p class="muted">nothing published yet.</p>
   ) : (
-    <ul class="ledger">
+    <ul class="posts">
       {posts.map((p) => (
         <li>
-          <span class="body">
-            <a href={`/writings/${p.id}`}>{p.data.title}</a>
-            {p.data.blurb && <span class="note">, {p.data.blurb}</span>}
-          </span>
-          <span class="meta">{fmt(p.data.date)}</span>
+          <div class="head">
+            <span class="name">
+              <a
+                href={p.href}
+                target={p.href.startsWith('http') ? '_blank' : undefined}
+                rel={p.href.startsWith('http') ? 'noopener' : undefined}
+              >{p.title}</a>
+            </span>
+            <span class="when">{fmt(p.date)}</span>
+          </div>
+          {p.blurb && <p class="blurb">{p.blurb}</p>}
         </li>
       ))}
     </ul>
   )}
+
+  <style>
+    .posts { list-style: none; margin: 0; padding: 0; }
+    .posts li { padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .posts li:last-child { border-bottom: none; }
+    .head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .name { font-weight: 500; }
+    .name a { text-decoration-color: var(--faint); }
+    .when { color: var(--faint); font-size: 0.85rem; flex-shrink: 0; }
+    .blurb { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; max-width: 60ch; }
+  </style>
 </Base>
