@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "CI=true ASTRO_TELEMETRY_DISABLED=1 astro dev",
-    "build": "astro build",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "astro preview"
   },
   "dependencies": {
