@@ -1,25 +1,25 @@
 /* clean. white page, one font, quiet links. that's it. */
 
+/* dark is the default. light is the opt-in. */
 :root {
-  --bg: #ffffff;
-  --ink: #1f2328;
-  --muted: #6e7781;
-  --faint: #a8b0b9;
-  --line: #eceef0;
-  --pop: #ffffff;
-}
-
-:root[data-theme='dark'] {
   --bg: #0e0f11;
   --ink: #e7e6e3;
   --muted: #96958f;
   --faint: #5c5c58;
   --line: #232428;
   --pop: #1a1b1e;
+  color-scheme: dark;
 }
 
-html { color-scheme: light; }
-:root[data-theme='dark'] html, :root[data-theme='dark'] { color-scheme: dark; }
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --ink: #1f2328;
+  --muted: #6e7781;
+  --faint: #a8b0b9;
+  --line: #eceef0;
+  --pop: #ffffff;
+  color-scheme: light;
+}
 
 * { box-sizing: border-box; }
 
@@ -39,7 +39,13 @@ a:hover { text-decoration-color: var(--ink); }
 
 ::selection { background: var(--ink); color: var(--bg); }
 
-.wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+/* the canvases sit at z-index 0; everything readable rides above them */
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* on a wide screen the column sits left of centre, so the scan gets the room */
+@media (min-width: 900px) {
+  .wrap { margin-left: 9vw; margin-right: auto; }
+}
 
 /* header / footer */
 
@@ -91,24 +97,24 @@ main { padding-top: 56px; }
 
 .map-frame { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 0 0 12px; }
 .map { height: 60vh; min-height: 360px; }
-.map-tiles { filter: grayscale(0.2) contrast(0.95); }
+/* maps ship light, so they get inverted for the dark default */
+.map-tiles { filter: invert(1) hue-rotate(180deg) grayscale(0.3) brightness(0.85) contrast(0.9); }
+/* leaflet's own css loads after this, so these need the extra specificity */
+.map-frame .leaflet-container { background: #17181b; font: inherit; }
 
-.leaflet-container { background: #f6f7f8; font: inherit; }
-:root[data-theme='dark'] .map-tiles { filter: invert(1) hue-rotate(180deg) grayscale(0.3) brightness(0.85) contrast(0.9); }
-:root[data-theme='dark'] .leaflet-container { background: #17181b; }
-:root[data-theme='dark'] .pin-dot { background: var(--ink); border-color: #0e0f11; }
-:root[data-theme='dark'] .pin-label { text-shadow: 0 0 3px #0e0f11, 0 0 5px #0e0f11, 0 0 7px #0e0f11; }
+:root[data-theme='light'] .map-tiles { filter: grayscale(0.2) contrast(0.95); }
+:root[data-theme='light'] .map-frame .leaflet-container { background: #f6f7f8; }
 
 .pin { display: grid; justify-items: center; }
 .pin-dot {
   width: 10px; height: 10px; border-radius: 50%;
-  background: var(--ink); border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(31, 35, 40, 0.35);
+  background: var(--ink); border: 2px solid var(--bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 .pin-label {
   font-size: 11px; font-weight: 500; line-height: 1.2;
   color: var(--ink); white-space: nowrap; margin-top: 2px;
-  text-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 7px #fff;
+  text-shadow: 0 0 3px var(--bg), 0 0 5px var(--bg), 0 0 7px var(--bg);
 }
 
 .leaflet-popup-content-wrapper {

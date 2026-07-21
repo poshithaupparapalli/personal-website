@@ -55,4 +55,8 @@ const { entries } = Astro.props;
       .addTo(map)
       .bindPopup(`<p class="popup-country">${country}</p>${items}`);
   }
+
+  // leaflet measures before the layout settles and leaves a gap up top
+  requestAnimationFrame(() => map.invalidateSize());
+  window.addEventListener('load', () => map.invalidateSize());
 </script>

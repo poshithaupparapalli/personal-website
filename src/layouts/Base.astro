@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Particles from '../components/Particles.astro';
 
 interface Props {
   title: string;
@@ -26,12 +27,13 @@ const current = (href: string) =>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script is:inline>
-      // light is the default — only flip if dark was chosen before
-      if (localStorage.getItem('theme') === 'dark')
-        document.documentElement.setAttribute('data-theme', 'dark');
+      // dark is the default — only flip if light was chosen before
+      if (localStorage.getItem('theme') === 'light')
+        document.documentElement.setAttribute('data-theme', 'light');
     </script>
   </head>
   <body>
+    <Particles />
     <div class="wrap">
       <header class="site-head">
         <nav class="site-nav">
@@ -44,17 +46,18 @@ const current = (href: string) =>
       <main>
         <slot />
       </main>
-      <footer class="site-foot">poshitha upparapalli</footer>
+      <footer class="site-foot">made by poshitha</footer>
     </div>
     <script>
       const btn = document.getElementById('theme-toggle')!;
       const root = document.documentElement;
-      const paint = () => { btn.textContent = root.getAttribute('data-theme') === 'dark' ? '☀' : '☾'; };
+      // no attribute means dark, since dark is the default
+      const isLight = () => root.getAttribute('data-theme') === 'light';
+      const paint = () => { btn.textContent = isLight() ? '☾' : '☀'; };
       btn.addEventListener('click', () => {
-        const dark = root.getAttribute('data-theme') === 'dark';
-        if (dark) root.removeAttribute('data-theme');
-        else root.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', dark ? 'light' : 'dark');
+        if (isLight()) root.removeAttribute('data-theme');
+        else root.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', isLight() ? 'light' : 'dark');
         paint();
       });
       paint();

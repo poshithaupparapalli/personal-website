@@ -55,5 +55,9 @@ const cities = [...new Set(spots.map((s) => s.city))];
     }
     if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.3));
     else map.setView([20, 0], 2);
+
+    // leaflet measures before the layout settles and leaves a gap up top
+    requestAnimationFrame(() => map.invalidateSize());
+    window.addEventListener('load', () => map.invalidateSize());
   </script>
 </Base>
