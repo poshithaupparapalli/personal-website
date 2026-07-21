@@ -10,13 +10,40 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+// pin to utc, otherwise the date slips a day depending on where it's built
 const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toLowerCase();
+  d
+    .toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    })
+    .toLowerCase();
 ---
 <Base title={`${post.data.title} · poshitha`}>
   <h1 class="page-title">{post.data.title}</h1>
-  <p class="lede">{fmt(post.data.date)}</p>
+  <p class="meta">
+    <span>{fmt(post.data.date)}</span>
+    {post.data.original && (
+      <>
+        <span class="dot">·</span>
+        <span>
+          first published on{' '}
+          <a href={post.data.original} target="_blank" rel="noopener">
+            {post.data.originalName ?? 'substack'}
+          </a>
+        </span>
+      </>
+    )}
+  </p>
+
   <div class="prose">
     <Content />
   </div>
+
+  <style>
+    .meta {
+      display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+      color: var(--muted); margin: 0 0 32px;
+    }
+    .dot { color: var(--faint); }
+  </style>
 </Base>

@@ -24,8 +24,11 @@ const posts = [...local, ...elsewhere].sort(
   (a, b) => b.date.valueOf() - a.date.valueOf()
 );
 
+// pin to utc, otherwise the date slips a day depending on where it's built
 const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toLowerCase();
+  d
+    .toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
+    .toLowerCase();
 ---
 <Base title="writings · poshitha">
   <h1 class="page-title">writings</h1>

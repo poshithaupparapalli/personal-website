@@ -2,6 +2,8 @@
 title: 8 things i learned before i turned 18
 date: 2025-05-09
 blurb: written at 2am in the library, the week i turned 18
+original: https://poshitha.substack.com/p/8-things-i-learned-before-i-turned
+originalName: my substack
 ---
 
 My freshman year is coming to an end, and I also recently turned 18 last week. As much as it doesn't sound that deep, I took some time to reflect on my time here, both in college and the past years of my life before I turned 18. I wrote these 8 lessons I learned before my birthday in the library, and I wanted to record and share them here.

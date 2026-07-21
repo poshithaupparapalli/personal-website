@@ -7,6 +7,9 @@ const writings = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     blurb: z.string().optional(),
+    // where it first went up, if it wasn't here
+    original: z.string().url().optional(),
+    originalName: z.string().optional(),
   }),
 });
 
