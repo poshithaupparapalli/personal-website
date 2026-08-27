@@ -1,7 +1,6 @@
 # personal-website
 
 [poshithaupparapalli.com](https://www.poshithaupparapalli.com/)
-
 the glowing brain on the homepage uses two real medical
 scans of a human brain, redrawn live as thousands of tiny glowing particles.
 
@@ -18,6 +17,5 @@ i've always been fascinated by the mind and the machine, and thought it'd be
 cool to experiment.
 
 ## built with
-
 [astro](https://astro.build), a plain html canvas for the brain, and
 [leaflet](https://leafletjs.com) for the maps.
