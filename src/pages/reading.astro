@@ -13,7 +13,7 @@ const books: { title: string; author?: string; note?: string }[] = [
 ---
 <Base title="reading · poshitha">
   <h1 class="page-title">reading</h1>
-  <p class="lede">things i keep coming back to, and what's on the shelf.</p>
+  <p class="lede"></p>
 
   <h2>articles</h2>
   {articles.length === 0 ? (
@@ -38,7 +38,7 @@ const books: { title: string; author?: string; note?: string }[] = [
 
   <h2>books</h2>
   {books.length === 0 ? (
-    <p class="muted">slowly getting back into it.</p>
+    <p class="muted"></p>
   ) : (
     <ul class="ledger">
       {books.map((b) => (
