@@ -215,10 +215,11 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
         top = copyEl ? copyEl.getBoundingClientRect().bottom - cr.top + 26 : H * 0.5;
         bh = vh * 0.9;
       } else {
-        // sits just below the copy, then nudged up a little so it rides higher
-        top = copyEl
-          ? (copyEl.getBoundingClientRect().bottom - cr.top) - vh * 0.1
-          : H * 0.32;
+        // rides up beside the "right now i'm a junior tech analyst..." line
+        var anchor = paras[2] || copyEl;
+        top = anchor
+          ? anchor.getBoundingClientRect().top - cr.top
+          : H * 0.3;
         // size is set on its own so nudging the position never rescales it
         bh = vh * 0.97;
       }
@@ -227,7 +228,7 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       var bw = bh * (sw / sh) * (mobile ? 1.15 : 1.3);
       if (bw > W * 1.06) { bw = W * 1.06; }
       // pushed right of centre — dead centre reads like a logo, not a scan
-      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.18), by0 = top;
+      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.24), by0 = top;
 
       var gw = Math.max(2, Math.round(bw / step)), gh = Math.max(2, Math.round(bh / step));
       var off = document.createElement('canvas');
