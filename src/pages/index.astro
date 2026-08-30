@@ -21,9 +21,20 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       hi, i'm poshitha. i'm 19, studying computer science & engineering + finance with a
       math minor at <a href="https://www2.lehigh.edu/" target="_blank" rel="noopener">lehigh</a>.
     </p>
+    <p>
+      my interests range across software, computer vision, nlp/rl, ai safety
+      research, reasoning, and a bit of robotics. lately i've been learning
+      <a href="https://lean-lang.org" target="_blank" rel="noopener">lean</a> and
+      exploring formal verification.
+    </p>
+    <p class="jump">
+      <a href="/about">↗ more about me</a>
+      <a href="/projects">↗ projects</a>
+      <a href="/work">↗ work</a>
+    </p>
   </div>
 
-  {/* the fuller bio, parked here in case i want it back on the front page:
+  {/* the fuller work bio, parked here in case i want it back on the front page:
 
     right now i help research and scout emerging technologies at samsung research
     america, mostly across digital health and emerging consumer tech. i also help
@@ -31,15 +42,9 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     summer i built elevate's first ai product as their software engineer, and last
     summer i built credit risk models at ford credit.
 
-    my interests range across software, computer vision, nlp/rl, ai safety
-    research, reasoning, and a bit of robotics. lately i've been learning lean and
-    exploring formal verification.
-
     i also spend a lot of time reading and thinking about which companies are
     leading ai in a safe, ethical way. feel free to reach out at
     pou228 [at] lehigh [dot] edu!
-
-    (it used to link out too: /about, /work, /projects, /writings)
   */}
 
   <!-- a real brain, redrawn live — MRI tissue underneath, MR angiography
@@ -187,10 +192,10 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
         top = copyEl ? copyEl.getBoundingClientRect().bottom - cr.top + 26 : H * 0.5;
         bh = vh * 0.9;
       } else {
-        // top of the scan lines up with the second paragraph
-        top = paras.length > 1
-          ? paras[1].getBoundingClientRect().top - cr.top
-          : H * 0.36;
+        // sits just below the copy, then nudged up a little so it rides higher
+        top = copyEl
+          ? (copyEl.getBoundingClientRect().bottom - cr.top) - vh * 0.1
+          : H * 0.32;
         // size is set on its own so nudging the position never rescales it
         bh = vh * 0.97;
       }
