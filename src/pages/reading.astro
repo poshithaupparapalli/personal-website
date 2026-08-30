@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+
+// fill these in.
+// articles: { title, author?, url, note? }
+// books: { title, author?, note? }
+const articles: { title: string; author?: string; url?: string; note?: string }[] = [
+  // { title: '', author: '', url: '', note: '' },
+];
+const books: { title: string; author?: string; note?: string }[] = [
+  // { title: '', author: '', note: '' },
+];
+---
+<Base title="reading · poshitha">
+  <h1 class="page-title">reading</h1>
+  <p class="lede">things i keep coming back to, and what's on the shelf.</p>
+
+  <h2>articles</h2>
+  {articles.length === 0 ? (
+    <p class="muted">list coming soon.</p>
+  ) : (
+    <ul class="ledger">
+      {articles.map((a) => (
+        <li>
+          <span class="body">
+            {a.url ? (
+              <a href={a.url} target="_blank" rel="noopener"><strong>{a.title}</strong></a>
+            ) : (
+              <strong>{a.title}</strong>
+            )}
+            {a.note && <span class="note">, {a.note}</span>}
+          </span>
+          {a.author && <span class="meta">{a.author}</span>}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <h2>books</h2>
+  {books.length === 0 ? (
+    <p class="muted">slowly getting back into it.</p>
+  ) : (
+    <ul class="ledger">
+      {books.map((b) => (
+        <li>
+          <span class="body">
+            <strong>{b.title}</strong>
+            {b.note && <span class="note">, {b.note}</span>}
+          </span>
+          {b.author && <span class="meta">{b.author}</span>}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <style>
+    h2 { font-size: 1rem; font-weight: 600; margin: 40px 0 12px; }
+  </style>
+</Base>

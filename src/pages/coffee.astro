@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+
+// add area/note anytime: { name, area, note }
+const cafes: { name: string; area?: string; note?: string }[] = [
+  { name: 'equator coffees' },
+  { name: 'the interval at long now' },
+  { name: 'elaichi co. chai house' },
+  { name: 'motoring coffee' },
+  { name: 'cafe greco' },
+  { name: 'q speciality coffee' },
+  { name: 'andytown coffee roasters' },
+  { name: 'jandii cafe' },
+  { name: 'atlas cafe' },
+  { name: 'sohn' },
+  { name: 'fiddle fig cafe & coffee' },
+  { name: 'the buoy' },
+];
+---
+<Base title="coffee · poshitha">
+  <h1 class="page-title">coffee</h1>
+  <p class="lede">my favorite cafés in sf, the ones worth the walk.</p>
+
+  {cafes.length === 0 ? (
+    <p class="muted">list coming soon.</p>
+  ) : (
+    <ul class="ledger">
+      {cafes.map((c) => (
+        <li>
+          <span class="body">
+            <strong>{c.name}</strong>
+            {c.note && <span class="note">, {c.note}</span>}
+          </span>
+          {c.area && <span class="meta">{c.area}</span>}
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
