@@ -105,6 +105,13 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     /* keeps the page tall enough for the scan to finish */
     .tail { height: 92vh; }
 
+    /* on wide screens .wrap is pushed 9vw left, and the canvas is positioned
+       against it — so counter that shift, otherwise the canvas right edge
+       stops early and the scan gets a hard vertical cut */
+    @media (min-width: 900px) {
+      #brain { left: 0; margin-left: -9vw; }
+    }
+
     .jump { display: flex; gap: 20px; margin-top: 36px; }
     .jump a { color: var(--muted); text-decoration: none; }
     .jump a:hover { color: var(--ink); }
