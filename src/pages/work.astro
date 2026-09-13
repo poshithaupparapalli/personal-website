@@ -11,90 +11,64 @@ const logo = (name?: string) => {
   return null;
 };
 
-const roles = [
+// one entry per company; a company can hold more than one role
+const experience = [
   {
-    role: 'software engineer',
-    where: 'elevate',
-    href: 'https://elevatevbsolutions.com/',
-    logo: 'elevate',
-    when: 'jun 2026 to now',
-    note: '',
+    where: 'samsung research america',
+    href: 'https://sra.samsung.com/',
+    logo: 'samsung',
+    roles: [{ role: 'emerging tech analyst', when: 'aug 2026 to now', note: "helping invest + research in women's health, biotech, and consumer tech" }],
   },
   {
-    role: 'investment intern',
+    where: 'lehigh university',
+    href: 'https://www2.lehigh.edu/',
+    logo: 'lehigh',
+    roles: [{ role: 'deep learning research assistant', when: 'sep 2026 to now', note: 'bina lab under prof. rahnemoonfar' }],
+  },
+  {
+    where: 'scholars of finance',
+    href: 'https://www.lehighsof.org/',
+    logo: 'sof',
+    roles: [
+      { role: 'research lead', when: 'mar 2026 to now', noteText: 'the research rundown', noteHref: 'https://lehighscholarsoffinance.substack.com/' },
+      { role: 'vp, member experience', when: 'dec 2025 to now' },
+    ],
+  },
+  {
+    where: 'ancora robotics',
+    href: 'https://www.linkedin.com/company/ancora-robotics/',
+    logo: 'ancora',
+    roles: [{ role: 'co-founder', when: 'aug 2026 to now', note: 'autonomous robots for guarding undersea cables and data centers' }],
+  },
+  {
     where: 'kidron capital',
     href: 'https://kidron-capital.com/wp-content/uploads/New_Kidron/kidron_homepage-2.html',
     logo: 'kidron',
-    when: 'feb 2026 to now',
-    note: "diligence on women's health and healthcare startups for a $25m fund. clinical workflows, regulatory paths, and the memos that go to the gps.",
+    roles: [{ role: 'investment analyst', when: 'feb 2026 to now' }],
   },
   {
-    role: 'credit valuation intern',
-    where: 'ford credit',
-    href: 'https://credit.ford.com',
-    logo: 'ford',
-    when: 'may 2025 to jul 2025',
-    note: 'survival and hazard modeling for default, payoff, and closure in sas. kaplan-meier curves, proportional hazard decision code, and baseline validation across three portfolio segments under ifrs 9.',
+    where: 'elevate',
+    href: 'https://elevatevbsolutions.com/',
+    logo: 'elevate',
+    roles: [{ role: 'software engineer', when: 'may 2026 to jul 2026' }],
   },
   {
-    role: 'tech lead',
     where: 'save tuba',
     href: 'https://savetuba.com/',
     logo: 'savetuba',
-    when: 'jan 2025 to dec 2025',
-    note: "one of five fellows sent to kazakhstan to rebuild save tuba's operating model. built the pricing and partnership models, and pitched a pilot across 100+ public schools.",
+    roles: [{ role: 'tech lead', when: 'jan 2025 to dec 2025' }],
   },
   {
-    role: 'fellow',
+    where: 'ford credit',
+    href: 'https://credit.ford.com/',
+    logo: 'ford',
+    roles: [{ role: 'quantitative credit risk intern', when: 'may 2025 to jul 2025' }],
+  },
+  {
     where: 'the dexterity global group',
     href: 'https://www.dexterityglobal.org/',
     logo: 'dexterity',
-    when: 'dec 2021 to now',
-    note: '',
-  },
-];
-
-const campus = [
-  {
-    role: 'fellow',
-    where: 'lehigh startup academy',
-    href: 'https://360.lehigh.edu/programs/startup-academy',
-    when: 'may 2026 to now',
-    note: '',
-  },
-  {
-    role: 'vp of membership experience',
-    where: 'scholars of finance, lehigh',
-    href: 'https://www.lehighsof.org/',
-    when: 'apr 2025 to now',
-    note: 'helping build my favourite community on campus',
-  },
-  {
-    role: 'founder + research lead',
-    where: 'the sof research rundown',
-    href: 'https://lehighscholarsoffinance.substack.com/i/191091144/the-repricing-of-who-controls-ai-infrastructure',
-    when: 'jan 2026 to now',
-    note: 'm&a, macro, and private markets',
-  },
-  {
-    role: 'resident assistant',
-    where: 'lehigh university',
-    when: 'aug 2025 to now',
-    note: '',
-  },
-  {
-    role: 'vc analyst',
-    where: 'tamid vc',
-    href: 'https://www.linkedin.com/company/lehightamid/posts/?feedView=all',
-    when: 'jan 2026 to now',
-    note: '',
-  },
-  {
-    role: 'secretary',
-    where: 'south asian student association',
-    href: 'https://www.instagram.com/lehigh_sasa/',
-    when: 'mar 2025 to may 2026',
-    note: '',
+    roles: [{ role: 'fellow', when: 'dec 2021 to now' }],
   },
 ];
 ---
@@ -102,56 +76,47 @@ const campus = [
   <h1 class="page-title">work</h1>
 
   <ul class="roles">
-    {roles.map((r) => (
-      <li>
-        <div class="row">
-          {logo(r.logo) ? (
-            <img class="mark" src={logo(r.logo)} alt="" />
-          ) : (
-            <span class="mark blank" />
-          )}
-          <div class="text">
-            <div class="head">
-              <span class="role">{r.role}</span>
-              <span class="when">{r.when}</span>
-            </div>
-            <p class="where">
-              {r.href ? (
-                <a href={r.href} target="_blank" rel="noopener">{r.where}</a>
-              ) : (
-                r.where
+    {experience.map((c) => {
+      const grouped = c.roles.length > 1;
+      return (
+        <li>
+          <div class="row">
+            {logo(c.logo) ? (
+              <img class="mark" src={logo(c.logo)} alt="" />
+            ) : (
+              <span class="mark blank" />
+            )}
+            <div class="text">
+              {grouped && (
+                <p class="company">
+                  {c.href ? <a href={c.href} target="_blank" rel="noopener">{c.where}</a> : c.where}
+                </p>
               )}
-            </p>
-            {r.note && <p class="note">{r.note}</p>}
-          </div>
-        </div>
-      </li>
-    ))}
-  </ul>
-
-  <h2>at lehigh</h2>
-  <ul class="roles">
-    {campus.map((r) => (
-      <li>
-        <div class="row">
-          <span class="mark blank" />
-          <div class="text">
-            <div class="head">
-              <span class="role">{r.role}</span>
-              <span class="when">{r.when}</span>
+              {c.roles.map((r) => (
+                <div class={grouped ? 'sub' : ''}>
+                  <div class="head">
+                    <span class="role">{r.role}</span>
+                    <span class="when">{r.when}</span>
+                  </div>
+                  {!grouped && (
+                    <p class="where">
+                      {c.href ? <a href={c.href} target="_blank" rel="noopener">{c.where}</a> : c.where}
+                    </p>
+                  )}
+                  {r.note ? (
+                    <p class="note">{r.note}</p>
+                  ) : r.noteText ? (
+                    <p class="note">
+                      {r.noteHref ? <a href={r.noteHref} target="_blank" rel="noopener">{r.noteText}</a> : r.noteText}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
             </div>
-            <p class="where">
-              {r.href ? (
-                <a href={r.href} target="_blank" rel="noopener">{r.where}</a>
-              ) : (
-                r.where
-              )}
-            </p>
-            {r.note && <p class="note">{r.note}</p>}
           </div>
-        </div>
-      </li>
-    ))}
+        </li>
+      );
+    })}
   </ul>
 
   <style>
@@ -160,23 +125,34 @@ const campus = [
     .roles li:last-child { border-bottom: none; }
 
     .row { display: flex; gap: 16px; align-items: flex-start; }
+    /* a white chip keeps dark logos (like the sof mark) visible in dark mode */
     .mark {
-      width: 30px; height: 30px; flex-shrink: 0; border-radius: 6px;
-      object-fit: contain; margin-top: 2px;
+      width: 34px; height: 34px; flex-shrink: 0; border-radius: 7px;
+      object-fit: contain; background: #fff; padding: 3px;
+      border: 1px solid var(--line); margin-top: 2px;
     }
     .mark.blank { visibility: hidden; }
     .text { flex: 1; min-width: 0; }
+
+    .company { font-weight: 600; font-size: 1.05rem; margin: 0 0 10px; }
+    .company a { text-decoration-color: var(--faint); }
+
+    /* nested roles under a grouped company get a quiet left rail */
+    .sub {
+      padding-left: 14px; border-left: 1px solid var(--line);
+      margin-top: 14px;
+    }
+    .sub:first-of-type { margin-top: 0; }
 
     .head {
       display: flex; align-items: baseline; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
     }
     .role { font-weight: 600; font-size: 1.05rem; }
+    .sub .role { font-weight: 500; font-size: 1rem; }
     .when { color: var(--faint); font-size: 0.85rem; flex-shrink: 0; }
     .where { color: var(--muted); margin: 1px 0 0; }
-    .note { color: var(--muted); margin: 10px 0 0; max-width: 62ch; font-size: 0.95rem; }
-
-    h2 { font-size: 1rem; font-weight: 600; margin: 46px 0 4px; }
+    .note { color: var(--muted); margin: 8px 0 0; max-width: 62ch; font-size: 0.95rem; }
 
     @media (max-width: 600px) {
       .mark, .mark.blank { display: none; }
