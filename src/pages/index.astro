@@ -87,7 +87,7 @@ const captions: Record<string, string> = {
         <button type="button" data-size="m">M</button>
         <button type="button" data-size="l">L</button>
       </div>
-      <section class="gallery" data-size="m" aria-label="photos i've taken">
+      <section class="gallery" data-size="s" aria-label="photos i've taken">
         {photos.map((f, i) => (
           <figure class="shot" style={`transition-delay:${(i % 8) * 55}ms`}>
             <img src={`/photos/${f}`} alt={captions[f] ?? ''} loading="lazy" />
@@ -200,8 +200,8 @@ const captions: Record<string, string> = {
         );
         try { localStorage.setItem('gallery-size', size); } catch {}
       };
-      let saved = 'm';
-      try { saved = localStorage.getItem('gallery-size') || 'm'; } catch {}
+      let saved = 's';
+      try { saved = localStorage.getItem('gallery-size') || 's'; } catch {}
       apply(saved);
       sizeButtons.forEach((b) =>
         b.addEventListener('click', () => apply((b as HTMLElement).dataset.size!))
