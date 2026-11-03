@@ -159,8 +159,7 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     }
 
     function palette() {
-      // dark is the default, so anything that isn't explicitly light is night
-      PAL = document.documentElement.getAttribute('data-theme') === 'light' ? PAL_L : PAL_D;
+      PAL = PAL_L;
       bakeSprites();
     }
     new MutationObserver(function () { palette(); draw(performance.now()); })
@@ -351,7 +350,7 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       var T = t * 0.001 * TWINKLE;
       var CR2 = CURSOR * CURSOR;
-      var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+      var dark = false;
 
       var tx = cursor ? (cursor.x - W / 2) * 0.035 : Math.sin(T * 0.13) * 9;
       var ty = cursor ? (cursor.y - H / 2) * 0.035 : Math.cos(T * 0.1) * 7;

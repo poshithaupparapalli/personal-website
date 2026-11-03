@@ -1,0 +1,55 @@
+---
+// subtle live-visitor count for the nav: a pulsing dot + how many people are
+// on the site right now, via supabase realtime "presence" (no db, no geo).
+// stays hidden until supabase creds exist, so nothing breaks without them.
+---
+<span id="live-count" class="live-count" title="people reading right now" hidden>
+  <span class="live-dot"></span><span class="live-n">1</span>
+</span>
+
+<style>
+  .live-count {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--muted); font-size: 0.85rem; line-height: 1;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #46c66a; box-shadow: 0 0 6px #46c66a;
+    animation: livepulse 2.4s ease-in-out infinite;
+  }
+  @keyframes livepulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+</style>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const URL = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
+  const KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;
+
+  const el = document.getElementById('live-count');
+  const nEl = el?.querySelector('.live-n');
+
+  if (el && nEl && URL && KEY) {
+    const supabase = createClient(URL, KEY);
+    const id = Math.random().toString(36).slice(2);
+    const channel = supabase.channel('live-visitors', {
+      config: { presence: { key: id } },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const count = Object.keys(channel.presenceState()).length;
+        nEl.textContent = String(count);
+        el.hidden = count < 1;
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') await channel.track({ t: Date.now() });
+      });
+
+    window.addEventListener('beforeunload', () => {
+      channel.untrack();
+      supabase.removeChannel(channel);
+    });
+  }
+</script>

@@ -23,7 +23,7 @@
 
   var PAL_L = ['242,113,28', '235,62,98', '168,66,235', '92,98,240', '38,118,235'];
   var PAL_D = ['255,158,70', '255,105,125', '216,108,255', '122,132,255', '86,156,255'];
-  var PAL = PAL_D;
+  var PAL = PAL_L;
 
   // same baked-sprite trick as the brain — one drawImage per particle
   var SPRITE = 32, sprites: HTMLCanvasElement[] = [];
@@ -43,7 +43,7 @@
   }
 
   function palette() {
-    PAL = document.documentElement.getAttribute('data-theme') === 'light' ? PAL_L : PAL_D;
+    PAL = PAL_L;
     bake();
   }
   new MutationObserver(palette).observe(document.documentElement, {
@@ -79,7 +79,7 @@
 
   function draw(t: number) {
     ctx.clearRect(0, 0, W, H);
-    var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+    var dark = false;
     ctx.globalCompositeOperation = dark ? 'lighter' : 'source-over';
     var T = t * 0.001;
     var CR2 = CURSOR * CURSOR;

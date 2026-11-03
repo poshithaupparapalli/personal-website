@@ -1,17 +1,7 @@
 /* clean. white page, one font, quiet links. that's it. */
 
-/* dark is the default. light is the opt-in. */
+/* light, and only light. */
 :root {
-  --bg: #0e0f11;
-  --ink: #e7e6e3;
-  --muted: #96958f;
-  --faint: #5c5c58;
-  --line: #232428;
-  --pop: #1a1b1e;
-  color-scheme: dark;
-}
-
-:root[data-theme='light'] {
   --bg: #ffffff;
   --ink: #1f2328;
   --muted: #6e7781;
@@ -63,6 +53,7 @@ a:hover { text-decoration-color: var(--ink); }
   color: var(--muted); font-size: 1rem; line-height: 1; font-family: inherit;
 }
 .toggle:hover { color: var(--ink); }
+.head-right { display: flex; align-items: center; gap: 14px; }
 
 .site-foot { margin-top: 80px; padding: 0 0 48px; color: var(--faint); font-size: 0.85rem; }
 
@@ -97,13 +88,9 @@ main { padding-top: 56px; }
 
 .map-frame { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 0 0 12px; }
 .map { height: 60vh; min-height: 360px; }
-/* maps ship light, so they get inverted for the dark default */
-.map-tiles { filter: invert(1) hue-rotate(180deg) grayscale(0.3) brightness(0.85) contrast(0.9); }
+.map-tiles { filter: grayscale(0.2) contrast(0.95); }
 /* leaflet's own css loads after this, so these need the extra specificity */
-.map-frame .leaflet-container { background: #17181b; font: inherit; }
-
-:root[data-theme='light'] .map-tiles { filter: grayscale(0.2) contrast(0.95); }
-:root[data-theme='light'] .map-frame .leaflet-container { background: #f6f7f8; }
+.map-frame .leaflet-container { background: #f6f7f8; font: inherit; }
 
 .pin { display: grid; justify-items: center; }
 .pin-dot {

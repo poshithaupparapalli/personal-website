@@ -10,62 +10,81 @@ const shot = (name: string) => {
   return null;
 };
 
+// newest first. dates are starting points from each repo — easy to correct.
 const projects = [
+  {
+    name: 'coalesce',
+    shot: 'coalesce',
+    href: 'https://github.com/kentneureiter/coalesce',
+    date: 'oct 2026',
+  },
+  {
+    name: 'mia',
+    shot: 'mia',
+    href: 'https://github.com/poshithaupparapalli/hackmit-project2',
+    date: 'sep 2026',
+  },
+  {
+    name: 'tara',
+    shot: 'tara',
+    href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
+    date: 'jul 2026',
+  },
   {
     name: 'resonance',
     shot: 'resonance',
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
-    what: 'a personalized news engine that pulls and ranks articles from 8+ sources every hour. ranking runs on cosine similarity, entity matching, and novelty, and it learns what you care about from how you read.',
-  },
-  {
-    name: 'trace',
-    shot: 'trace',
-    href: 'https://github.com/kripahsk-29/stanford-hackathon-project-2026',
-    what: 'helps young students with dyslexia with their speech. they read a sentence aloud, the app catches the words they struggled with, then computer vision lets them trace those letters in the air while saying them. built at a stanford hackathon.',
-  },
-  {
-    name: 'raiseit',
-    shot: 'raiseit',
-    href: 'https://github.com/poshithaupparapalli/raiseit',
-    what: "computer vision that spots raised hands in large lecture halls. yolov8 on a raspberry pi, trained on classroom footage we collected and labeled. funded through lehigh's baker institute pitch night.",
-  },
-  {
-    name: 'parkalot',
-    shot: 'parkalot',
-    href: 'https://github.com/poshithaupparapalli/parking_lot_lehigh_hackathon',
-    what: "shows which lots on lehigh's campus have spots open, so nobody circles for twenty minutes looking. built at a lehigh hackathon.",
+    date: 'mar 2026',
   },
   {
     name: 'sof family trees',
     shot: 'familytrees',
     href: 'https://poshithaupparapalli.github.io/SoF-family-trees/',
-    what: 'a fun one. maps out the family trees of scholars of finance',
+    date: 'mar 2026',
+  },
+  {
+    name: 'parkalot',
+    shot: 'parkalot',
+    href: 'https://github.com/poshithaupparapalli/parking_lot_lehigh_hackathon',
+    date: 'oct 2025',
+  },
+  {
+    name: 'raiseit',
+    shot: 'raiseit',
+    href: 'https://github.com/poshithaupparapalli/raiseit',
+    date: 'jun 2025',
   },
   {
     name: 'dijkstra vs bellman-ford',
     shot: 'ee',
     href: '/dijkstra-vs-bellman-ford.pdf',
-    what: 'my ib extended essay, written in high school. compares the two algorithms on time complexity while solving the traveling salesman problem, tested on a graph built from every state capital in india.',
+    date: '2023',
   },
 ];
+
+const isExternal = (href: string) => href.startsWith('http');
 ---
 <Base title="projects · poshitha">
   <h1 class="page-title">projects</h1>
 
-  <ul class="projects">
+  <ul class="grid">
     {projects.map((p) => (
-      <li class={shot(p.shot) ? '' : 'noshot'}>
-        {shot(p.shot) && (
-          <div class="shot">
-            <img src={shot(p.shot)} alt={p.name} loading="lazy" />
+      <li>
+        <a
+          href={p.href}
+          target={isExternal(p.href) ? '_blank' : undefined}
+          rel={isExternal(p.href) ? 'noopener' : undefined}
+        >
+          <div class="thumb">
+            {shot(p.shot) ? (
+              <img src={shot(p.shot)} alt={p.name} loading="lazy" />
+            ) : (
+              <span class="placeholder">{p.name}</span>
+            )}
           </div>
-        )}
-        <div class="text">
-          <h2>
-            <a href={p.href} target="_blank" rel="noopener">{p.name}</a>
-          </h2>
-          {p.what && <p>{p.what}</p>}
-        </div>
+          <div class="title">{p.name}</div>
+          {p.date && <div class="date">{p.date}</div>}
+        </a>
       </li>
     ))}
   </ul>
@@ -77,28 +96,32 @@ const projects = [
   </p>
 
   <style>
-    .projects { list-style: none; margin: 0; padding: 0; }
-    .projects li {
-      display: grid; grid-template-columns: 300px 1fr; gap: 32px;
-      align-items: start; margin: 0 0 56px;
+    .grid {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; gap: 40px 28px;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     }
-    /* no screenshot yet, so the text takes the whole row instead of
-       leaving a hole where the image would be */
-    .projects li.noshot { grid-template-columns: 1fr; }
-    .shot img {
-      width: 100%; height: auto; display: block;
-      border-radius: 6px; border: 1px solid var(--line);
-    }
-    .text h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 8px; }
-    .text h2 a { text-decoration-color: var(--faint); }
-    .text p { color: var(--muted); margin: 0; max-width: 52ch; font-size: 0.95rem; }
+    .grid a { display: block; text-decoration: none; }
 
-    .more { margin: 8px 0 0; }
+    .thumb {
+      aspect-ratio: 3 / 2; overflow: hidden; border-radius: 8px;
+      border: 1px solid var(--line); background: var(--pop);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thumb img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top;
+      display: block; transition: transform 0.35s ease;
+    }
+    .grid a:hover .thumb img { transform: scale(1.03); }
+    .placeholder {
+      font-size: 1.15rem; color: var(--faint); letter-spacing: 0.01em;
+    }
+
+    .title { margin-top: 12px; font-weight: 500; color: var(--ink); }
+    .grid a:hover .title { color: var(--accent, var(--ink)); }
+    .date { margin-top: 2px; font-size: 0.85rem; color: var(--faint); }
+
+    .more { margin: 48px 0 0; }
     .more a { color: var(--muted); }
-
-    @media (max-width: 700px) {
-      .projects li { grid-template-columns: 1fr; gap: 14px; margin-bottom: 44px; }
-      .shot:empty { display: none; }
-    }
   </style>
 </Base>
