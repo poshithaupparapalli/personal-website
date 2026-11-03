@@ -29,13 +29,8 @@ a:hover { text-decoration-color: var(--ink); }
 
 ::selection { background: var(--ink); color: var(--bg); }
 
-/* the canvases sit at z-index 0; everything readable rides above them */
-.wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-
-/* on a wide screen the column sits left of centre, so the scan gets the room */
-@media (min-width: 900px) {
-  .wrap { margin-left: 9vw; margin-right: auto; }
-}
+/* one quiet centred column, nothing behind it */
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
 
 /* header / footer */
 

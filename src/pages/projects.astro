@@ -1,64 +1,66 @@
 ---
-import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 
-// drop a screenshot in public/projects/ named to match `shot` and it shows up
-const shot = (name: string) => {
-  for (const ext of ['png', 'jpg', 'jpeg', 'webp', 'gif']) {
-    if (fs.existsSync(`public/projects/${name}.${ext}`)) return `/projects/${name}.${ext}`;
-  }
-  return null;
-};
-
-// newest first. dates are starting points from each repo — easy to correct.
+// a plain list: name, a category + year on the right, one line underneath.
+// no thumbnails, no cards — just the work.
 const projects = [
   {
     name: 'coalesce',
-    shot: 'coalesce',
     href: 'https://github.com/kentneureiter/coalesce',
-    date: 'oct 2026',
+    tag: 'multi-agent',
+    year: '2026',
+    blurb:
+      'a shared floor for coding agents — each one sees what the others just changed, so nobody ends up writing against a stale codebase.',
   },
   {
     name: 'mia',
-    shot: 'mia',
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
-    date: 'sep 2026',
+    tag: 'hackmit',
+    year: '2026',
+    blurb: '', // TODO: one line on what mia does
   },
   {
     name: 'tara',
-    shot: 'tara',
     href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
-    date: 'jul 2026',
+    tag: 'hackathon',
+    year: '2026',
+    blurb: '', // TODO: one line on what tara does
   },
   {
     name: 'resonance',
-    shot: 'resonance',
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
-    date: 'mar 2026',
+    tag: 'news · ml',
+    year: '2026',
+    blurb:
+      'a personalized news engine that pulls and ranks articles from 8+ sources every hour — cosine similarity, entity matching, and novelty, tuned by how you actually read.',
   },
   {
     name: 'sof family trees',
-    shot: 'familytrees',
     href: 'https://poshithaupparapalli.github.io/SoF-family-trees/',
-    date: 'mar 2026',
+    tag: 'data viz',
+    year: '2026',
+    blurb: 'an interactive family tree of scholars of finance — who mentored whom across the chapters.',
   },
   {
     name: 'parkalot',
-    shot: 'parkalot',
     href: 'https://github.com/poshithaupparapalli/parking_lot_lehigh_hackathon',
-    date: 'oct 2025',
+    tag: 'hackathon',
+    year: '2025',
+    blurb: "find open parking on lehigh's campus in real time. built in a weekend.",
   },
   {
     name: 'raiseit',
-    shot: 'raiseit',
     href: 'https://github.com/poshithaupparapalli/raiseit',
-    date: 'jun 2025',
+    tag: '',
+    year: '2025',
+    blurb: '', // TODO: one line on what raiseit does
   },
   {
     name: 'dijkstra vs bellman-ford',
-    shot: 'ee',
     href: '/dijkstra-vs-bellman-ford.pdf',
-    date: '2023',
+    tag: 'essay',
+    year: '2023',
+    blurb: 'a short write-up comparing two shortest-path algorithms — when each one wins.',
   },
 ];
 
@@ -67,61 +69,43 @@ const isExternal = (href: string) => href.startsWith('http');
 <Base title="projects · poshitha">
   <h1 class="page-title">projects</h1>
 
-  <ul class="grid">
+  <ul class="projects">
     {projects.map((p) => (
       <li>
-        <a
-          href={p.href}
-          target={isExternal(p.href) ? '_blank' : undefined}
-          rel={isExternal(p.href) ? 'noopener' : undefined}
-        >
-          <div class="thumb">
-            {shot(p.shot) ? (
-              <img src={shot(p.shot)} alt={p.name} loading="lazy" />
-            ) : (
-              <span class="placeholder">{p.name}</span>
-            )}
-          </div>
-          <div class="title">{p.name}</div>
-          {p.date && <div class="date">{p.date}</div>}
-        </a>
+        <div class="row">
+          <a
+            class="name"
+            href={p.href}
+            target={isExternal(p.href) ? '_blank' : undefined}
+            rel={isExternal(p.href) ? 'noopener' : undefined}
+          >
+            {p.name} <span class="arr">↗</span>
+          </a>
+          <span class="meta">{[p.tag, p.year].filter(Boolean).join(' · ')}</span>
+        </div>
+        {p.blurb && <p class="blurb">{p.blurb}</p>}
       </li>
     ))}
   </ul>
 
-  <p class="more">
-    <a href="https://github.com/poshithaupparapalli?tab=repositories" target="_blank" rel="noopener">
-      everything else on github
-    </a>
-  </p>
-
   <style>
-    .grid {
-      list-style: none; margin: 0; padding: 0;
-      display: grid; gap: 40px 28px;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    }
-    .grid a { display: block; text-decoration: none; }
+    .projects { list-style: none; margin: 0; padding: 0; }
+    .projects li { padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .projects li:last-child { border-bottom: none; }
 
-    .thumb {
-      aspect-ratio: 3 / 2; overflow: hidden; border-radius: 8px;
-      border: 1px solid var(--line); background: var(--pop);
-      display: flex; align-items: center; justify-content: center;
+    .row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .name {
+      font-weight: 500; color: var(--ink); text-decoration: none;
+      text-underline-offset: 3px;
     }
-    .thumb img {
-      width: 100%; height: 100%; object-fit: cover; object-position: top;
-      display: block; transition: transform 0.35s ease;
-    }
-    .grid a:hover .thumb img { transform: scale(1.03); }
-    .placeholder {
-      font-size: 1.15rem; color: var(--faint); letter-spacing: 0.01em;
-    }
+    .name:hover { text-decoration: underline; text-decoration-color: var(--faint); }
+    .arr { color: var(--faint); font-size: 0.8em; }
+    .meta { color: var(--faint); font-size: 0.8rem; flex-shrink: 0; white-space: nowrap; }
 
-    .title { margin-top: 12px; font-weight: 500; color: var(--ink); }
-    .grid a:hover .title { color: var(--accent, var(--ink)); }
-    .date { margin-top: 2px; font-size: 0.85rem; color: var(--faint); }
+    .blurb { margin: 6px 0 0; color: var(--muted); font-size: 0.9rem; max-width: 60ch; }
 
-    .more { margin: 48px 0 0; }
-    .more a { color: var(--muted); }
+    @media (max-width: 520px) {
+      .row { flex-direction: column; gap: 2px; }
+    }
   </style>
 </Base>

@@ -3,6 +3,16 @@ import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 
 const hasPhoto = fs.existsSync('public/cover.jpg');
+
+// everything dropped in public/photos shows up in the gallery below, A→Z.
+// prefix filenames 01_, 02_… to control the order.
+const photoDir = 'public/photos';
+const photos = fs.existsSync(photoDir)
+  ? fs
+      .readdirSync(photoDir)
+      .filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f))
+      .sort()
+  : [];
 ---
 <Base title="poshitha upparapalli">
   <h1>poshitha upparapalli</h1>
@@ -57,24 +67,18 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     </p>
   </div>
 
-  {/* the fuller work bio, parked here in case i want it back on the front page:
-
-    right now i help research and scout emerging technologies at samsung research
-    america, mostly across digital health and emerging consumer tech. i also help
-    with due diligence and investing at kidron, a femtech and biotech fund. this
-    summer i built elevate's first ai product as their software engineer, and last
-    summer i built credit risk models at ford credit.
-
-    i also spend a lot of time reading and thinking about which companies are
-    leading ai in a safe, ethical way. feel free to reach out at
-    pou228 [at] lehigh [dot] edu!
-  */}
-
-  <!-- a real brain, redrawn live — MRI tissue underneath, MR angiography
-       vessels on top. scans: "MRI of Human Brain" (CC BY-SA 4.0) +
-       "Mra-mip" (CC BY-SA 3.0), wikimedia commons -->
-  <canvas id="brain" aria-hidden="true"></canvas>
-  <div class="tail"></div>
+  {photos.length > 0 && (
+    <>
+      <h2 class="photos-label">photos</h2>
+      <section class="gallery" aria-label="photos i've taken">
+        {photos.map((f) => (
+          <figure class="shot">
+            <img src={`/photos/${f}`} alt="" loading="lazy" />
+          </figure>
+        ))}
+      </section>
+    </>
+  )}
 
   <style>
     h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 28px; }
@@ -87,337 +91,56 @@ const hasPhoto = fs.existsSync('public/cover.jpg');
     .copy p { font-size: 0.85rem; }
     .statement { font-size: 1rem; line-height: 1.55; }
 
-    /* the brain lives behind the whole first screen; text floats over it.
-       it dissolves toward the fold so the next section reads clean */
-    /* all the words sit together up top; the scan sprawls below them */
-    .copy { margin-bottom: 0; }
-
-    #brain {
-      /* .wrap is the containing block, so centre on it to land on the
-         viewport centre rather than getting shoved right by the page margin */
-      position: absolute; top: 0; left: 50%;
-      width: 100vw; margin-left: -50vw;
-      height: 148vh;
-      z-index: 0; pointer-events: none;
-      -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 97%);
-      mask-image: linear-gradient(to bottom, #000 78%, transparent 97%);
-    }
-    /* keeps the page tall enough for the scan to finish */
-    .tail { height: 92vh; }
-
-    /* on wide screens .wrap is pushed 9vw left, and the canvas is positioned
-       against it — so counter that shift, otherwise the canvas right edge
-       stops early and the scan gets a hard vertical cut */
-    @media (min-width: 900px) {
-      #brain { left: 0; margin-left: -9vw; }
-    }
-
     .jump { display: flex; gap: 20px; margin-top: 36px; }
     .jump a { color: var(--muted); text-decoration: none; }
     .jump a:hover { color: var(--ink); }
+
+    /* photos — a wide grid below the bio that breaks out of the text column */
+    .photos-label {
+      margin: 96px 0 18px; font-size: 0.85rem; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.02em;
+    }
+    .gallery {
+      /* break out of .wrap to span the full viewport, like the reference */
+      width: 100vw; position: relative; left: 50%; right: 50%;
+      margin-left: -50vw; margin-right: -50vw;
+      padding: 0 16px 24px;
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    .shot {
+      margin: 0; aspect-ratio: 1 / 1; overflow: hidden; background: var(--line);
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .shot.in { opacity: 1; transform: none; }
+    .shot img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.5s ease;
+    }
+    .shot:hover img { transform: scale(1.03); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shot { opacity: 1; transform: none; transition: none; }
+    }
   </style>
 
   <script>
-    /* ---------------- TUNABLE DIALS ---------------- */
-    var STEP    = 4;      // sampling grid, px — smaller = denser
-    var SPECKS  = 700;    // ambient dust around the scan
-    var CURSOR  = 180;    // cursor glow radius, px
-    var TWINKLE = 1;      // shimmer speed
-    var GLOW    = 1;      // halo size on the bright particles at night
-    var BUDGET  = 26000;  // hard cap on particles. do not raise this —
-                          // the draw loop runs every one of them at 60fps
-    /* ----------------------------------------------- */
-
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    var canvas = document.getElementById('brain') as HTMLCanvasElement,
-      ctx = canvas.getContext('2d')!;
-    var W = 0, H = 0, buckets: any[][] = [], cursor: { x: number; y: number } | null = null;
-
-    // false-color like an ultrasound: bright tissue runs warm, dim runs cool
-    var PAL_L = ['242,113,28', '235,62,98', '168,66,235', '92,98,240', '38,118,235'];
-    var PAL_D = ['255,158,70', '255,105,125', '216,108,255', '122,132,255', '86,156,255'];
-    var PAL = PAL_L;
-
-    // each colour gets baked into a little radial-gradient sprite once, then
-    // every particle is a single drawImage. way cheaper than arc+fill per dot,
-    // and the soft edge gives the glow for free
-    var SPRITE = 32, sprites: HTMLCanvasElement[] = [];
-    function bakeSprites() {
-      sprites = PAL.map(function (rgb) {
-        var s = document.createElement('canvas');
-        s.width = s.height = SPRITE;
-        var c = s.getContext('2d')!;
-        var g = c.createRadialGradient(SPRITE / 2, SPRITE / 2, 0, SPRITE / 2, SPRITE / 2, SPRITE / 2);
-        g.addColorStop(0, 'rgba(' + rgb + ',1)');
-        g.addColorStop(0.35, 'rgba(' + rgb + ',0.85)');
-        g.addColorStop(1, 'rgba(' + rgb + ',0)');
-        c.fillStyle = g;
-        c.fillRect(0, 0, SPRITE, SPRITE);
-        return s;
-      });
-    }
-
-    function palette() {
-      PAL = PAL_L;
-      bakeSprites();
-    }
-    new MutationObserver(function () { palette(); draw(performance.now()); })
-      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-    // particle radii, near/mid/far — the scan is drawn as dots, like the real thing
-    var SIZES = [0.55, 0.95, 1.6];
-
-    var placed = 0;
-    // box around the words. the scan runs behind them, so inside this box the
-    // particles thin out and dim — the glow gets out of the way of the reading
-    var safe: { x0: number; x1: number; y0: number; y1: number } | null = null;
-
-    function addDot(bx: number, x: number, y: number, c: number, a: number, z: number) {
-      if (placed >= BUDGET) return;
-
-      if (safe && x > safe.x0 && x < safe.x1 && y > safe.y0 && y < safe.y1) {
-        // how deep into the text box this particle sits, 0 at the edge → 1 well
-        // inside. keeps the fade soft instead of a visible rectangle
-        var dx = Math.min(x - safe.x0, safe.x1 - x);
-        var dy = Math.min(y - safe.y0, safe.y1 - y);
-        var deep = Math.min(1, Math.min(dx, dy) / 100);
-        if (Math.random() < 0.62 * deep) return;
-        a *= 1 - 0.82 * deep;
-      }
-
-      placed++;
-      buckets[bx].push({
-        x: x, y: y, c: c, a: a, z: z,
-        r: SIZES[bx] * (0.75 + Math.random() * 0.6),
-        tw: Math.random() * 6.28, sp: 0.4 + Math.random() * 1.1
-      });
-    }
-
-    // two real scans — MRI tissue below, angiography vessels on top
-    var tissue = new Image(), vessels = new Image();
-    var loaded = 0;
-    tissue.onload = vessels.onload = function () { if (++loaded === 2) start(); };
-    tissue.src = '/brain-scan.jpg';
-    vessels.src = '/brain-vessels.jpg';
-
-    function sample(im: HTMLImageElement, opts: any) {
-      var mobile = W < 600;
-      var step = STEP * (mobile ? 1.7 : 1) * (opts.step || 1);
-
-      // crop hard into the skull so only brain renders
-      var sw = im.width * opts.cropW, sh = im.height * opts.cropH;
-      var sx = (im.width - sw) / 2, sy = (im.height - sh) / 2 + im.height * 0.01;
-
-      // starts under the whole block of copy — never behind the words.
-      // measured off the real text so it holds up at any width
-      var vh = window.innerHeight;
-      var cr = canvas.getBoundingClientRect();
-      var copyEl = document.querySelector('.copy');
-      var paras = document.querySelectorAll('.copy p');
-      var top, bh;
-
-      if (mobile) {
-        top = copyEl ? copyEl.getBoundingClientRect().bottom - cr.top + 26 : H * 0.5;
-        bh = vh * 0.9;
-      } else {
-        // rides up beside the "right now i'm a junior tech analyst..." line
-        var anchor = paras[2] || copyEl;
-        top = anchor
-          ? anchor.getBoundingClientRect().top - cr.top
-          : H * 0.3;
-        // size is set on its own so nudging the position never rescales it
-        bh = vh * 0.97;
-      }
-
-      // stretched wide — the scan should sprawl, not sit in a neat portrait box
-      var bw = bh * (sw / sh) * (mobile ? 1.15 : 1.3);
-      if (bw > W * 1.06) { bw = W * 1.06; }
-      // pushed right of centre — dead centre reads like a logo, not a scan
-      var bx0 = (W - bw) / 2 + W * (mobile ? 0.01 : 0.24), by0 = top;
-
-      var gw = Math.max(2, Math.round(bw / step)), gh = Math.max(2, Math.round(bh / step));
-      var off = document.createElement('canvas');
-      off.width = gw; off.height = gh;
-      var octx = off.getContext('2d', { willReadFrequently: true })!;
-      octx.drawImage(im, sx, sy, sw, sh, 0, 0, gw, gh);
-      var data = octx.getImageData(0, 0, gw, gh).data;
-
-      // brightness of every cell that clears the floor, so the quota below can
-      // thin evenly. hard-stopping at the budget mid-scan would just delete
-      // the bottom of the brain
-      var vals = new Float32Array(gw * gh);
-      var candidates = 0;
-      for (var gy = 0; gy < gh; gy++) {
-        for (var gx = 0; gx < gw; gx++) {
-          // elliptical mask — kills the skull ring left by the square crop
-          var mx = (gx - gw / 2) / (gw / 2), my = (gy - gh / 2) / (gh / 2);
-          if (mx * mx + my * my > 1) continue;
-          var i = (gy * gw + gx) * 4;
-          var v = (data[i] * 0.35 + data[i + 1] * 0.5 + data[i + 2] * 0.15) / 255;
-          v = Math.min(1, Math.pow(v, opts.gamma) * opts.gain);
-          if (v < opts.floor) continue;
-          vals[gy * gw + gx] = v;
-          candidates++;
-        }
-      }
-
-      // thin the whole field by one ratio so the scan stays even at any size
-      var quota = opts.quota || BUDGET;
-      var ratio = candidates > quota ? quota / candidates : 1;
-
-      for (var gy2 = 0; gy2 < gh; gy2++) {
-        for (var gx2 = 0; gx2 < gw; gx2++) {
-          var v2 = vals[gy2 * gw + gx2];
-          if (!v2) continue;
-          var keep = (opts.keep + v2 * (1 - opts.keep)) * ratio;
-          if (Math.random() > keep) continue;
-
-          var x = bx0 + (gx2 + 0.5) / gw * bw + (Math.random() - 0.5) * step * 1.4;
-          var y = by0 + (gy2 + 0.5) / gh * bh + (Math.random() - 0.5) * step * 1.4;
-          opts.emit(x, y, v2);
-        }
-      }
-      return { bx0: bx0, by0: by0, bw: bw, bh: bh };
-    }
-
-    function gen() {
-      buckets = [[], [], []];
-      placed = 0;
-      if (loaded < 2) return;
-      var mobile = W < 600;
-
-      // measure the words so the scan can dim itself behind them
-      safe = null;
-      var head = document.querySelector('h1'), body = document.querySelector('.copy');
-      if (head && body) {
-        var cr0 = canvas.getBoundingClientRect();
-        var hr = head.getBoundingClientRect(), br = body.getBoundingClientRect();
-        safe = {
-          x0: Math.min(hr.left, br.left) - cr0.left - 24,
-          x1: Math.max(hr.right, br.right) - cr0.left + 24,
-          y0: Math.min(hr.top, br.top) - cr0.top - 24,
-          y1: Math.max(hr.bottom, br.bottom) - cr0.top + 24,
-        };
-      }
-
-      // vasculature first — it's the layer that matters, so it gets first
-      // claim on the particle budget. sampled fine so thin arteries stay
-      // continuous instead of breaking into dots
-      sample(vessels, {
-        cropW: 0.82, cropH: 0.84, step: 0.62, gamma: 1.5, gain: 1.5, floor: 0.2, keep: 0.7,
-        quota: 14000,
-        emit: function (x: number, y: number, v: number) {
-          var c = v > 0.62 ? 0 : v > 0.45 ? 1 : v > 0.3 ? 2 : 3; // orange → pink → purple
-          if (Math.random() < 0.14) c = (c + 1) % 5;
-          addDot(v > 0.6 ? 2 : v > 0.34 ? 1 : 0, x, y, c, 0.35 + v * 0.65, 0.75 + v * 0.5);
-        },
-      });
-
-      // tissue behind it — faint, cool, far away. just enough to suggest a brain
-      var rect = sample(tissue, {
-        cropW: 0.54, cropH: 0.6, step: 1.6, gamma: 0.9, gain: 1, floor: 0.1, keep: 0.06,
-        quota: 7000,
-        emit: function (x: number, y: number, v: number) {
-          var c = v > 0.55 ? 3 : 4; // blues only — it sits behind everything
-          addDot(0, x, y, c, 0.07 + v * 0.22, 0.3 + v * 0.2);
-        },
-      });
-
-      // ambient dust drifting off the scan
-      var cx = W * 0.5, cy = rect.by0 + rect.bh * 0.5, rx = rect.bw * 0.62, ry = rect.bh * 0.6;
-      for (var s = 0; s < SPECKS * (mobile ? 0.4 : 1); s++) {
-        var t = Math.random() * 6.28, r = Math.sqrt(Math.random());
-        addDot(0, cx + Math.cos(t) * r * rx * 1.2, cy + Math.sin(t) * r * ry * 1.2,
-          (Math.random() * 5) | 0, 0.06 + Math.random() * 0.18, 0.2 + Math.random() * 0.9);
-      }
-    }
-
-    function init() {
-      var rect = canvas.getBoundingClientRect(); W = rect.width; H = rect.height;
-      if (!W || !H) return;
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      gen();
-    }
-
-    // parallax eases toward the cursor so the depth feels weighty, not jittery
-    var paraX = 0, paraY = 0;
-
-    function draw(t: number) {
-      ctx.clearRect(0, 0, W, H);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      var T = t * 0.001 * TWINKLE;
-      var CR2 = CURSOR * CURSOR;
-      var dark = false;
-
-      var tx = cursor ? (cursor.x - W / 2) * 0.035 : Math.sin(T * 0.13) * 9;
-      var ty = cursor ? (cursor.y - H / 2) * 0.035 : Math.cos(T * 0.1) * 7;
-      paraX += (tx - paraX) * 0.04; paraY += (ty - paraY) * 0.04;
-
-      // at night the particles add together where they overlap, so dense
-      // vessels burn bright the way they do in the real scan
-      ctx.globalCompositeOperation = dark ? 'lighter' : 'source-over';
-
-      // sprites are soft-edged, so they need to be drawn bigger than the
-      // nominal radius for the core to read at the right size
-      var spread = dark ? 2.7 * GLOW : 2.6;
-
-      for (var b = 0; b < 3; b++) {
-        var list = buckets[b];
-        for (var i = 0; i < list.length; i++) {
-          var d = list[i];
-          var x = d.x + paraX * d.z, y = d.y + paraY * d.z;
-          var a = d.a * (reduce ? 0.85 : 0.62 + 0.38 * Math.sin(T * d.sp + d.tw));
-          // additive blending on black eats brightness — push it back up
-          var r = d.r;
-          // just enough lift for black; more and the vessels clip to white
-          if (dark) { a *= 0.78; }
-          if (cursor) {
-            var ex = x - cursor.x, ey = y - cursor.y, dd = ex * ex + ey * ey;
-            if (dd < CR2) {
-              var near = 1 - Math.sqrt(dd) / CURSOR;
-              a += near * 0.55;
-              r *= 1 + near * 0.5; // particles swell as you pass over them
+    // fade/rise each photo in as it scrolls into view
+    const shots = document.querySelectorAll('.shot');
+    if (shots.length) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
             }
           }
-          if (a <= 0.02) continue;
-          if (a > 1) a = 1;
-          var s = r * spread;
-          ctx.globalAlpha = a;
-          ctx.drawImage(sprites[d.c], x - s, y - s, s * 2, s * 2);
-        }
-      }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
+      );
+      shots.forEach((el) => io.observe(el));
     }
-
-    var raf: number | null = null;
-    function loop(t: number) { draw(t); raf = requestAnimationFrame(loop); }
-    function start() {
-      init();
-      draw(0); // paint immediately — don't wait for the animation loop
-      if (!reduce) { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); }
-    }
-
-    // the canvas sits behind the page, so listen on the window
-    window.addEventListener('mousemove', function (e) {
-      var r = canvas.getBoundingClientRect();
-      cursor = { x: e.clientX - r.left, y: e.clientY - r.top };
-      if (reduce) draw(0);
-    });
-    window.addEventListener('mouseout', function () { cursor = null; if (reduce) draw(0); });
-    window.addEventListener('touchmove', function (e) {
-      var r = canvas.getBoundingClientRect(); var tc = e.touches[0];
-      cursor = { x: tc.clientX - r.left, y: tc.clientY - r.top };
-    }, { passive: true });
-    window.addEventListener('touchend', function () { cursor = null; });
-
-    var rt: ReturnType<typeof setTimeout>;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(start, 150); });
-
-    palette();
-    start();
   </script>
 </Base>
