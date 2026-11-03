@@ -2,8 +2,6 @@
 import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 
-const hasPhoto = fs.existsSync('public/cover.jpg');
-
 // everything dropped in public/photos shows up in the gallery below, A→Z.
 // prefix filenames 01_, 02_… to control the order.
 const photoDir = 'public/photos';
@@ -32,13 +30,10 @@ const captions: Record<string, string> = {
   </div>
 
   <div class="copy">
-    <div class="lead">
-      {hasPhoto && <img class="me" src="/cover.jpg" alt="poshitha" />}
-      <p class="statement">
-        hi, i'm poshitha. i'm 19, studying computer science & engineering + finance with a
-        math minor at <a href="https://www2.lehigh.edu/" target="_blank" rel="noopener">lehigh</a>.
-      </p>
-    </div>
+    <p class="statement">
+      hi, i'm poshitha. i'm 19, studying computer science & engineering + finance with a
+      math minor at <a href="https://www2.lehigh.edu/" target="_blank" rel="noopener">lehigh</a>.
+    </p>
     <p>
       right now, i'm a junior technical analyst at <a href="https://sra.samsung.com/" target="_blank" rel="noopener">samsung research america</a>
       and support due diligence and investing at <a href="https://kidron-capital.com/wp-content/uploads/New_Kidron/kidron_homepage-2.html" target="_blank" rel="noopener">kidron capital</a>.
@@ -90,19 +85,14 @@ const captions: Record<string, string> = {
   )}
 
   <style>
-    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 28px; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 24px; }
     .intro { display: flex; align-items: center; gap: 24px; margin: 0 0 32px; }
-    /* small round photo beside the first paragraph; text never wraps under it */
-    .lead { display: flex; align-items: center; gap: 20px; margin: 0 0 18px; }
-    .lead .statement { margin: 0; }
-    .me { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; object-position: center 28%; flex-shrink: 0; }
-    @media (max-width: 520px) { .me { width: 64px; height: 64px; } .lead { gap: 14px; } }
     .links { list-style: none; margin: 0; padding: 0; display: flex; gap: 18px; }
     .links a { color: var(--muted); text-decoration: none; }
     .links a:hover { color: var(--ink); }
-    p { margin: 0 0 18px; max-width: 56ch; }
-    .copy p { font-size: 0.85rem; }
-    .statement { font-size: 1rem; line-height: 1.55; }
+    p { margin: 0 0 16px; max-width: 62ch; }
+    .copy p { font-size: 0.9rem; }
+    .statement { font-size: 1rem; }
 
     .jump { display: flex; gap: 20px; margin-top: 36px; }
     .jump a { color: var(--muted); text-decoration: none; }

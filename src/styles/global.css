@@ -16,16 +16,17 @@
 html {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.65;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 body { margin: 0; min-height: 100vh; }
 
-a { color: inherit; text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; }
-a:hover { text-decoration-color: var(--ink); }
+/* content links are blue, like the reference; nav/footer links set their own color */
+a { color: #3b5bd6; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
 
 ::selection { background: var(--ink); color: var(--bg); }
 
@@ -56,7 +57,7 @@ main { padding-top: 56px; }
 
 /* page furniture */
 
-.page-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 10px; }
+.page-title { font-size: 1.4rem; font-weight: 600; margin: 0 0 10px; }
 .lede { color: var(--muted); margin: 0 0 32px; max-width: 54ch; }
 .muted { color: var(--muted); }
 .faint { color: var(--faint); }
