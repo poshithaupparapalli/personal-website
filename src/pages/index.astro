@@ -13,12 +13,17 @@ const photos = fs.existsSync(photoDir)
       .filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f))
       .sort()
   : [];
+
+// hover captions for the gallery — key is the exact filename in public/photos.
+// fill these in whenever; any photo without one just has no caption on hover.
+const captions: Record<string, string> = {
+  // '01_mongolia.jpg': 'wild horses outside ulaanbaatar',
+};
 ---
 <Base title="poshitha upparapalli">
   <h1>poshitha upparapalli</h1>
 
   <div class="intro">
-    {hasPhoto && <img class="me" src="/cover.jpg" alt="poshitha" />}
     <ul class="links">
       <li><a href="https://github.com/poshithaupparapalli" target="_blank" rel="noopener">github</a></li>
       <li><a href="https://www.linkedin.com/in/poshithar/" target="_blank" rel="noopener">linkedin</a></li>
@@ -27,6 +32,7 @@ const photos = fs.existsSync(photoDir)
   </div>
 
   <div class="copy">
+    {hasPhoto && <img class="me" src="/cover.jpg" alt="poshitha" />}
     <p class="statement">
       hi, i'm poshitha. i'm 19, studying computer science & engineering + finance with a
       math minor at <a href="https://www2.lehigh.edu/" target="_blank" rel="noopener">lehigh</a>.
@@ -73,7 +79,8 @@ const photos = fs.existsSync(photoDir)
       <section class="gallery" aria-label="photos i've taken">
         {photos.map((f) => (
           <figure class="shot">
-            <img src={`/photos/${f}`} alt="" loading="lazy" />
+            <img src={`/photos/${f}`} alt={captions[f] ?? ''} loading="lazy" />
+            {captions[f] && <figcaption>{captions[f]}</figcaption>}
           </figure>
         ))}
       </section>
@@ -83,7 +90,12 @@ const photos = fs.existsSync(photoDir)
   <style>
     h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 28px; }
     .intro { display: flex; align-items: center; gap: 24px; margin: 0 0 32px; }
-    .me { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }
+    /* small film photo, floated so the first lines wrap beside it */
+    .me {
+      float: left; width: 118px; height: auto;
+      margin: 5px 22px 12px 0; border-radius: 3px;
+    }
+    @media (max-width: 520px) { .me { width: 96px; margin-right: 16px; } }
     .links { list-style: none; margin: 0; padding: 0; display: flex; gap: 18px; }
     .links a { color: var(--muted); text-decoration: none; }
     .links a:hover { color: var(--ink); }
@@ -97,6 +109,7 @@ const photos = fs.existsSync(photoDir)
 
     /* photos — a wide grid below the bio that breaks out of the text column */
     .photos-label {
+      clear: both;
       margin: 96px 0 18px; font-size: 0.85rem; font-weight: 500;
       color: var(--muted); letter-spacing: 0.02em;
     }
@@ -109,7 +122,8 @@ const photos = fs.existsSync(photoDir)
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
     .shot {
-      margin: 0; aspect-ratio: 1 / 1; overflow: hidden; background: var(--line);
+      position: relative; margin: 0; aspect-ratio: 1 / 1;
+      overflow: hidden; background: var(--line);
       opacity: 0; transform: translateY(16px);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
@@ -119,6 +133,14 @@ const photos = fs.existsSync(photoDir)
       transition: transform 0.5s ease;
     }
     .shot:hover img { transform: scale(1.03); }
+    /* caption slides up over the photo on hover (empty ones render nothing) */
+    .shot figcaption {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 14px 12px 10px; font-size: 0.8rem; line-height: 1.35; color: #fff;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0));
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .shot:hover figcaption { opacity: 1; }
 
     @media (prefers-reduced-motion: reduce) {
       .shot { opacity: 1; transform: none; transition: none; }
