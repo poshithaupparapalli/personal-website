@@ -18,14 +18,14 @@ const projects = [
     shot: 'seismocardiography',
     href: '',
     meta: 'deep learning research · taebi lab · sep 2026 – present',
-    desc: "ecg-free heart monitoring from chest vibrations. every heartbeat makes your chest vibrate a little — a cheap motion sensor, even a phone, can catch it, and buried in there is the moment your aortic valve opens, which says a lot about how well your heart is pumping. i'm on a 3-person team in dr. taebi's lab at lehigh trying to drop the ecg entirely: i've labeled heartbeats across four datasets, built the tooling that merges our three annotators into one ground truth, and we're now benchmarking the main published methods before training our own model that has to hold up on people it's never seen.",
+    desc: "ecg-free heart monitoring from chest vibrations. i'm on a 3-person team in dr. taebi's lab pulling the exact moment your aortic valve opens out of a noisy chest-motion signal — no ecg, and it has to hold up on people it's never seen.",
   },
   {
     name: 'mobile robotics',
     shot: 'robotics',
     href: '',
     meta: 'lehigh cse 360 · fall 2026',
-    desc: "a semester of autonomous mobile robotics, all built around one loop: sense a noisy world, estimate what's actually true, then act on it. the main project was a vision-based line follower on a real moorebot scout — hsv tape segmentation, ransac line fitting, and two pid controllers (omnidirectional strafe vs. forward + turn) validated in simulation before live deployment. earlier i built a wall-following controller for a 30-sonar robot under gaussian noise and 25% multipath outliers (ransac over least squares to kill a ~0.2m steady-state offset), and calibrated a stereo depth pipeline in opencv to 0.72px reprojection error.",
+    desc: "autonomous mobile robotics on real hardware. built a vision-based line follower on a moorebot scout — hsv tape segmentation, ransac line fitting, and two pid controllers tuned in simulation before live deployment — plus a wall-follower for a 30-sonar robot under heavy noise and a stereo depth pipeline in opencv calibrated to 0.72px.",
   },
   {
     name: 'coalesce',
@@ -46,7 +46,7 @@ const projects = [
     shot: 'mia',
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
     meta: 'hackmit · 2026',
-    desc: '', // TODO: one line on what mia does
+    desc: 'a browser companion that spots the repetitive busywork you do all day and turns it into 1-click automations, so small business owners can work on their business instead of in it. i built the execution agent and the google workspace integration — shipped in 15 hours at hackmit.',
   },
   {
     name: 'resonance',
