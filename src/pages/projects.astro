@@ -5,7 +5,7 @@ import Base from '../layouts/Base.astro';
 // drop a screenshot in public/projects/ named to match `shot` and it replaces
 // the blank slot automatically.
 const shot = (name: string) => {
-  for (const ext of ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif']) {
+  for (const ext of ['svg', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'avif']) {
     if (fs.existsSync(`public/projects/${name}.${ext}`)) return `/projects/${name}.${ext}`;
   }
   return null;
@@ -68,7 +68,7 @@ const projects = [
     href: 'https://github.com/poshithaupparapalli/raiseit',
     tagline: 'tracking raised hands with cv',
     meta: '2025',
-    desc: "in a big lecture hall it's hard to catch every raised hand. raiseit is a computer vision system that detects and tracks them in real time with yolov8 and bytetrack. i fine-tuned it on 300+ annotated images and deployed it across five classrooms at lehigh, running inference on a jetson orin nano.",
+    desc: "in a big lecture hall it's hard to catch every raised hand. raiseit is a computer vision system that detects and tracks them in real time with yolov8.",
   },
 ];
 

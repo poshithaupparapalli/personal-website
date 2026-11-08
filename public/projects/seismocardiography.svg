@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="6" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="500" fill="#faf8f3"/>
+
+  <!-- hand-drawn ink strokes -->
+  <g filter="url(#rough)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <!-- ecg -->
+    <path d="M150,150 L250,150 Q268,128 286,150 L312,150 L320,160 L330,72 L342,176 L354,150 L420,150 Q446,120 472,150 L690,150"
+          stroke="#e0695f" stroke-width="2.6"/>
+    <!-- scg (chest vibration) -->
+    <path d="M150,340 L318,340 L330,347 L340,262 L352,330 L364,372 L378,314 L392,356 L406,336 L420,348 L434,342 L690,340"
+          stroke="#3b5bd6" stroke-width="2.6"/>
+    <!-- marker circle round the aortic valve opening -->
+    <path d="M372,248 C388,258 384,290 360,298 C334,306 312,288 316,266 C320,246 348,236 372,248"
+          stroke="#e8923a" stroke-width="2.4"/>
+    <!-- scrawled arrow to it -->
+    <path d="M520,214 C462,208 412,222 388,244" stroke="#e8923a" stroke-width="2"/>
+    <path d="M388,244 L402,240 M388,244 L394,230" stroke="#e8923a" stroke-width="2"/>
+  </g>
+
+  <!-- the one annotation -->
+  <text x="528" y="212" font-size="25" font-style="italic" fill="#403d38" transform="rotate(-2 528 212)">aortic valve opening</text>
+
+  <!-- trace labels -->
+  <text x="150" y="120" font-size="22" font-style="italic" fill="#a39f95">ecg</text>
+  <text x="150" y="392" font-size="22" font-style="italic" fill="#a39f95">scg · chest vibration</text>
+</svg>
