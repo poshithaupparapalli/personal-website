@@ -2,40 +2,116 @@
 import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 
-const dir = 'public/photos';
-const photos = fs.existsSync(dir)
+// everything dropped in public/photos becomes a frame in the viewer.
+const photoDir = 'public/photos';
+const files = fs.existsSync(photoDir)
   ? fs
-      .readdirSync(dir)
-      .filter((f) => /\.(jpe?g|png|webp|gif)$/i.test(f))
+      .readdirSync(photoDir)
+      .filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f))
       .sort()
   : [];
 
-const caption = (f: string) => f.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+// seeded shuffle so the sequence is varied but stable between builds.
+const rng = (() => {
+  let s = 20260211;
+  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+})();
+for (let i = files.length - 1; i > 0; i--) {
+  const j = Math.floor(rng() * (i + 1));
+  [files[i], files[j]] = [files[j], files[i]];
+}
+
+// captions (optional) — key is the exact filename.
+const captions: Record<string, string> = {
+  // '01_mongolia.jpg': 'wild horses outside ulaanbaatar',
+};
+
+const frames = files.map((f) => ({ src: `/photos/${f}`, cap: captions[f] ?? '' }));
 ---
 <Base title="photos · poshitha">
-  <h1 class="page-title">photos</h1>
-  <p class="lede">in roughly the order they happened.</p>
-
-  {photos.length === 0 ? (
-    <p class="muted">nothing here yet.</p>
-  ) : (
-    <div class="grid">
-      {photos.map((f, i) => (
-        <figure class="tape">
-          <img src={`/photos/${f}`} alt={caption(f)} loading="lazy" />
-          <figcaption class="mono">({i + 1}) {caption(f)}</figcaption>
-        </figure>
-      ))}
+  {frames.length > 0 ? (
+    <div class="viewer">
+      <div class="controls">
+        <button type="button" id="prev">previous</button>
+        <span class="slash">/</span>
+        <button type="button" id="next">next</button>
+        <span class="counter" id="counter"></span>
+      </div>
+      <figure class="stage">
+        <img id="photo" alt="" />
+        <figcaption class="cap" id="cap"></figcaption>
+      </figure>
     </div>
+  ) : (
+    <p class="muted">no photos yet.</p>
   )}
 
   <style>
-    .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 34px 26px; padding-top: 10px;
+    /* left-aligned, like james lin — the photo fills the column width */
+    .viewer { margin-top: 4px; }
+    .controls {
+      display: flex; align-items: baseline; gap: 7px;
+      margin: 0 0 14px; font-size: 0.95rem;
     }
-    figure.tape { margin: 0; }
-    figcaption { color: var(--faint); padding-top: 8px; }
-    .empty-note { color: var(--muted); margin: 0; max-width: 44ch; }
+    .controls button {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font: inherit; color: #3b5bd6;
+    }
+    .controls button:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .controls .slash { color: var(--faint); }
+    .counter { color: var(--faint); font-size: 0.82rem; margin-left: 3px; }
+
+    .stage { margin: 0; }
+    .stage img {
+      display: block; max-width: 100%; max-height: 80vh;
+      width: auto; height: auto;
+      /* the crossfade when you move between photos */
+      opacity: 0; transition: opacity 0.45s ease;
+    }
+    .stage img.ready { opacity: 1; }
+    .cap { margin-top: 12px; color: var(--muted); font-size: 0.85rem; min-height: 1.2em; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stage img { transition: none; }
+    }
   </style>
+
+  <script define:vars={{ frames }}>
+    const photo = document.getElementById('photo');
+    if (photo && frames.length) {
+      const counter = document.getElementById('counter');
+      const cap = document.getElementById('cap');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const n = frames.length;
+      let i = 0;
+      let token = 0;
+
+      const show = () => {
+        const me = ++token;
+        const frame = frames[i];
+        counter.textContent = `(${i + 1}/${n})`;
+        // fade the current photo out, swap once the next is decoded, fade in
+        photo.classList.remove('ready');
+        const pre = new Image();
+        pre.onload = () => {
+          if (me !== token) return; // a newer click already happened
+          photo.src = frame.src;
+          photo.alt = frame.cap || '';
+          cap.textContent = frame.cap || '';
+          requestAnimationFrame(() => photo.classList.add('ready'));
+        };
+        pre.src = frame.src;
+      };
+      const go = (d) => { i = (i + d + n) % n; show(); };
+
+      prev.addEventListener('click', () => go(-1));
+      next.addEventListener('click', () => go(1));
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') go(-1);
+        if (e.key === 'ArrowRight') go(1);
+      });
+      show();
+    }
+  </script>
 </Base>
