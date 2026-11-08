@@ -1,50 +1,56 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// text-only list: monospace title, a short write-up, then the stack in italics.
+// text-only list: monospace title, context + year, then a short write-up.
 // newest first.
 const projects = [
   {
-    name: 'seismocardiography',
+    title: 'ecg-free cardiac event detection',
+    meta: 'taebi lab · 2026',
     href: '',
-    desc: "every heartbeat makes your chest vibrate a tiny bit, and that vibration carries the exact moment your aortic valve opens, which tells you how well the heart is pumping. the problem is the signal is noisy and looks different on every person, so almost every existing method cheats by using an ecg to find that moment. i'm on a 3-person team in dr. taebi's lab trying to drop the ecg completely. so far i've labeled heartbeats across four datasets, built the tooling that reconciles how our three annotators marked each beat into one ground truth, and we're benchmarking the standard approaches (template matching and a 1d u-net) before training our own model that has to generalize to people it has never seen.",
-    tech: 'python (pytorch, numpy, scipy), matlab',
+    desc: 'developing an ecg-independent approach to detecting aortic valve opening (ao) and mitral valve closure (mc) from seismocardiography (scg) signals. on a three-person research team, i developed an annotation reconciliation pipeline to establish ground-truth labels across four datasets and am benchmarking template matching and 1d u-net models for cross-subject generalization.',
   },
   {
-    name: 'mobile robotics',
+    title: 'autonomous navigation and perception',
+    meta: 'cse 360 · 2026',
     href: '',
-    desc: "a semester of putting robotics theory on real hardware, all built around one loop: read a noisy world, figure out what's actually true, then act. the main build was a vision-based line follower on a moorebot scout that segments tape by color in hsv, fits a line to it with ransac so bad pixels don't drag the robot off course, and steers with two pid controllers i tuned in simulation before trusting them live. i also built a wall follower for a 30-sonar robot where a quarter of the readings are wrong on purpose, and calibrated a stereo depth pipeline in opencv down to 0.72px reprojection error.",
-    tech: 'python (opencv, numpy), matlab, ros',
+    desc: 'implemented autonomous navigation and perception algorithms on robotic platforms, including a vision-based line follower using hsv segmentation, ransac line fitting, and dual pid controllers tuned in simulation. also developed sonar-based wall following under corrupted sensor measurements and calibrated an opencv stereo vision pipeline to 0.72-pixel reprojection error.',
   },
   {
-    name: 'coalesce',
+    title: 'multi-agent code synchronization',
+    meta: 'aws hackathon · 2026',
     href: 'https://github.com/kentneureiter/coalesce',
-    desc: "when a few coding agents work the same repo in parallel, they end up writing against stale code and stepping on each other. coalesce fixes that: claude code hooks capture each branch's diffs, python ast pulls out the function-level changes, and that context gets pushed to the other agents before their conflicting edits ever reach review. we won most innovative project at lehigh's aws hackathon for it.",
-    tech: 'python (fastapi), claude code hooks, supabase',
+    desc: "developed a synchronization system for parallel coding agents to reduce conflicts arising from stale repository state. integrated claude code hooks to capture branch-level diffs, used python ast analysis to identify function-level changes, and distributed relevant updates across agents. awarded most innovative project at lehigh's aws hackathon.",
   },
   {
-    name: 'tara',
+    title: 'human preference evaluation for generative ai',
+    meta: 'yc startup school · 2026',
     href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
-    desc: "can a model actually learn your personal visual taste? tara tests that with pairwise human evaluation: people pick between images, and the system scores how well a model predicts those choices. i built the evaluation harness, the judging ui, and the scoring pipeline for a 25-person live panel, all shipped in 8 hours at yc startup school's hackathon, where it took 2nd place in the terac track.",
-    tech: 'typescript (next.js), terac api, vercel',
+    desc: "built a pairwise evaluation framework to measure how accurately ai models predict individual visual preferences. developed the judging interface, evaluation harness, and scoring pipeline for a live study with 25 participants. built in eight hours and awarded second place in the terac track at yc startup school's hackathon.",
   },
   {
-    name: 'mia',
+    title: 'agentic browser workflow automation',
+    meta: 'hackmit · 2026',
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
-    desc: "most small business owners lose hours a day to repetitive browser busywork: copying invoice totals from gmail into a sheet, cross-referencing tabs, the stuff that should just disappear. mia is a browser companion that watches for those patterns and offers to turn them into one-click automations, so they can work on the business instead of in it. i built the execution agent and the google workspace integration that actually runs the tasks. shipped in 15 hours at hackmit.",
-    tech: 'python (fastapi, openai api), javascript (react)',
+    desc: 'developed a browser-based automation agent that identifies repetitive workflows and enables one-click execution across web applications. implemented the task execution agent and google workspace integrations to automate workflows involving gmail and google sheets. built a working prototype in 15 hours at hackmit.',
   },
   {
-    name: 'resonance',
+    title: 'personalized news recommendation and clustering',
+    meta: '2026',
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
-    desc: "staying informed usually means drowning in duplicate coverage from a dozen sources. resonance is a personalized news engine that pulls over 500 articles a day, groups related stories with openai embeddings and leiden graph clustering so you see each thing once, and learns what you actually care about from a short onboarding. i co-founded it, and it sends daily briefings to 50+ readers.",
-    tech: 'python (fastapi, openai api), next.js, postgresql, supabase',
+    desc: 'co-founded an ai-powered news platform delivering personalized daily briefings to 50+ readers. built an information retrieval pipeline ingesting 500+ articles daily, using openai embeddings and leiden graph clustering to group related coverage. implemented interest-based recommendation ranking to personalize news feeds from user onboarding preferences.',
   },
   {
-    name: 'raiseit',
+    title: 'scholars of finance family trees',
+    meta: '2026',
+    href: 'https://poshithaupparapalli.github.io/SoF-family-trees/',
+    desc: '',
+  },
+  {
+    title: 'real-time hand-raising detection and tracking',
+    meta: '2025–26',
     href: 'https://github.com/poshithaupparapalli/raiseit',
-    desc: "in a big lecture hall it's hard to catch every raised hand. raiseit is a computer vision system that detects and tracks them in real time with yolov8.",
-    tech: 'python (yolov8)',
+    desc: 'developed a computer vision system for detecting and tracking raised hands in crowded lecture halls using yolov8.',
   },
 ];
 
@@ -60,16 +66,21 @@ const isExternal = (href: string) => href.startsWith('http');
         <li class="project">
           <div class="name">
             {p.href ? (
-              <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>{p.name}</a>
+              <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>{p.title}</a>
             ) : (
-              <span>{p.name}</span>
+              <span>{p.title}</span>
             )}
           </div>
-          <p class="desc">{p.desc}</p>
+          {p.meta && <div class="meta">{p.meta}</div>}
+          {p.desc && <p class="desc">{p.desc}</p>}
         </li>
       );
     })}
   </ul>
+
+  <p class="more">
+    <a href="https://github.com/poshithaupparapalli" target="_blank" rel="noopener">more on github →</a>
+  </p>
 
   <style>
     .projects { list-style: none; margin: 0; padding: 0; }
@@ -78,11 +89,15 @@ const isExternal = (href: string) => href.startsWith('http');
 
     .name {
       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-weight: 700; font-size: 0.95rem; margin-bottom: 10px;
+      font-weight: 700; font-size: 0.95rem;
     }
     .name a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
     .name a:hover { color: var(--muted); }
+    .meta { color: var(--faint); font-size: 0.82rem; margin: 4px 0 10px; }
 
     .desc { margin: 0; color: var(--ink); font-size: 0.95rem; max-width: 64ch; }
+
+    .more { margin: 36px 0 0; }
+    .more a { color: var(--muted); }
   </style>
 </Base>

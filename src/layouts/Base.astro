@@ -4,7 +4,7 @@ import LiveCount from '../components/LiveCount.astro';
 
 // build date, shown in the footer; refreshes on every deploy
 const updated = new Date()
-  .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+  .toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
   .toLowerCase();
 
 interface Props {
