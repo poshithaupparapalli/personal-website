@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+
+// your sketchbook — one sketch at a time, flip through with the ticks or arrows.
+// fill this in: put images in public/sketchbook/ and add an entry for each.
+const sketches: { src: string; title: string; date: string }[] = [
+  // { src: '/sketchbook/royce-hall.jpg', title: 'royce hall', date: 'mar 3, 2024' },
+];
+---
+<Base title="sketchbook · poshitha">
+  {sketches.length > 0 ? (
+    <div class="sketchbook">
+      <div class="meta">
+        <div class="s-title" id="s-title"></div>
+        <div class="s-date" id="s-date"></div>
+      </div>
+
+      <figure class="stage">
+        <img id="s-img" alt="" />
+      </figure>
+
+      <div class="ticks" id="s-ticks" role="group" aria-label="sketchbook pages">
+        {sketches.map((_, idx) => (
+          <button type="button" class="tick" data-i={idx} aria-label={`go to sketch ${idx + 1}`}></button>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <>
+      <h1 class="page-title">sketchbook</h1>
+      <p class="muted">coming soon.</p>
+    </>
+  )}
+
+  <style>
+    .sketchbook { display: flex; flex-direction: column; align-items: center; }
+    .meta { text-align: center; margin: 8px 0 22px; }
+    .s-title { font-size: 1.1rem; font-weight: 600; }
+    .s-date { color: var(--faint); font-size: 0.85rem; margin-top: 3px; }
+
+    .stage { margin: 0; }
+    .stage img {
+      display: block; max-width: 100%; max-height: 70vh;
+      width: auto; height: auto; border-radius: 4px;
+    }
+
+    .ticks { display: flex; align-items: flex-end; gap: 4px; margin-top: 34px; height: 20px; }
+    .tick {
+      width: 2px; height: 10px; padding: 0; border: none; cursor: pointer;
+      background: var(--faint); opacity: 0.45; transition: height 0.2s ease, opacity 0.2s ease;
+    }
+    .tick:hover { opacity: 0.8; }
+    .tick[aria-current='true'] { height: 20px; opacity: 1; background: var(--ink); }
+  </style>
+
+  <script define:vars={{ sketches }}>
+    const img = document.getElementById('s-img');
+    if (img && sketches.length) {
+      const titleEl = document.getElementById('s-title');
+      const dateEl = document.getElementById('s-date');
+      const ticks = Array.from(document.querySelectorAll('.tick'));
+      const n = sketches.length;
+      let i = 0;
+
+      const show = () => {
+        const s = sketches[i];
+        img.src = s.src;
+        img.alt = s.title || '';
+        titleEl.textContent = s.title || '';
+        dateEl.textContent = s.date || '';
+        ticks.forEach((t, idx) => t.setAttribute('aria-current', String(idx === i)));
+      };
+      const go = (d) => { i = (i + d + n) % n; show(); };
+
+      ticks.forEach((t) => t.addEventListener('click', () => { i = Number(t.dataset.i); show(); }));
+      img.addEventListener('click', () => go(1));
+      img.style.cursor = 'pointer';
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') go(-1);
+        if (e.key === 'ArrowRight') go(1);
+      });
+      show();
+    }
+  </script>
+</Base>

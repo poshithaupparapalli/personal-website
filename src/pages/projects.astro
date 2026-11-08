@@ -11,56 +11,64 @@ const shot = (name: string) => {
   return null;
 };
 
-// newest first.
+// newest first. tagline = the short phrase next to the title; desc = the longer
+// write-up under it (yours to fill in).
 const projects = [
   {
     name: 'seismocardiography',
     shot: 'seismocardiography',
     href: '',
-    meta: 'deep learning research · taebi lab · sep 2026 – present',
-    desc: "ecg-free heart monitoring from chest vibrations. i'm on a 3-person team in dr. taebi's lab pulling the exact moment your aortic valve opens out of a noisy chest-motion signal — no ecg, and it has to hold up on people it's never seen.",
+    tagline: 'ecg-free heart monitoring',
+    meta: 'taebi lab · 2026',
+    desc: '',
   },
   {
     name: 'mobile robotics',
     shot: 'robotics',
     href: '',
-    meta: 'lehigh cse 360 · fall 2026',
-    desc: "autonomous mobile robotics on real hardware. built a vision-based line follower on a moorebot scout — hsv tape segmentation, ransac line fitting, and two pid controllers tuned in simulation before live deployment — plus a wall-follower for a 30-sonar robot under heavy noise and a stereo depth pipeline in opencv calibrated to 0.72px.",
+    tagline: 'autonomous robots on real hardware',
+    meta: 'cse 360 · 2026',
+    desc: '',
   },
   {
     name: 'coalesce',
     shot: 'coalesce',
     href: 'https://github.com/kentneureiter/coalesce',
-    meta: 'aws hackathon · oct 2026',
-    desc: "a system that keeps parallel coding agents in sync — claude code hooks capture each branch's diffs, pull out the function-level changes with python ast, and hand that context to the other agents before conflicting edits ever reach review. won most innovative project at lehigh's aws hackathon.",
+    tagline: 'keeping coding agents in sync',
+    meta: 'aws hackathon · 2026',
+    desc: '',
   },
   {
     name: 'tara',
     shot: 'tara',
     href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
-    meta: 'yc startup school hackathon · jul 2026',
-    desc: 'a benchmark for whether ai can replicate your personal visual taste, through pairwise human evaluation. built the eval harness, judging ui, and scoring pipeline for a 25-person live panel in 8 hours — 2nd place in the terac track.',
+    tagline: 'can ai learn your taste?',
+    meta: 'yc startup school · 2026',
+    desc: '',
   },
   {
     name: 'mia',
     shot: 'mia',
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
+    tagline: 'automating the busywork',
     meta: 'hackmit · 2026',
-    desc: 'a browser companion that spots the repetitive busywork you do all day and turns it into 1-click automations, so small business owners can work on their business instead of in it. i built the execution agent and the google workspace integration — shipped in 15 hours at hackmit.',
+    desc: '',
   },
   {
     name: 'resonance',
     shot: 'resonance',
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
-    meta: 'mar 2026 – present',
-    desc: 'a personalized ai news platform sending daily briefings to 50+ readers. pulls 500+ articles a day and clusters them with openai embeddings + leiden graphs to dedupe coverage, then learns your taste from a quick onboarding. co-founded.',
+    tagline: 'a news feed that learns you',
+    meta: '2026',
+    desc: '',
   },
   {
     name: 'raiseit',
     shot: 'raiseit',
     href: 'https://github.com/poshithaupparapalli/raiseit',
+    tagline: 'tracking raised hands with cv',
     meta: '2025',
-    desc: 'a computer vision system that detects and tracks raised hands in big lecture halls (yolov8 + bytetrack). fine-tuned on 300+ annotated images and deployed across five classrooms at lehigh on a jetson orin nano.',
+    desc: '',
   },
 ];
 
@@ -82,22 +90,25 @@ const isExternal = (href: string) => href.startsWith('http');
         <article class="project">
           <div class="shot">
             {p.href ? (
-              <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>
-                {media}
-              </a>
+              <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>{media}</a>
             ) : (
               media
             )}
           </div>
           <div class="body">
-            <h2 class="name">
-              {p.href ? (
-                <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>{p.name}</a>
-              ) : (
-                p.name
-              )}
-            </h2>
-            {p.meta && <div class="meta">{p.meta}</div>}
+            <div class="head">
+              <span class="titleline">
+                <span class="name">
+                  {p.href ? (
+                    <a href={p.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener' : undefined}>{p.name}</a>
+                  ) : (
+                    p.name
+                  )}
+                </span>
+                {p.tagline && <span class="tagline">{p.tagline}</span>}
+              </span>
+              {p.meta && <span class="date">{p.meta}</span>}
+            </div>
             {p.desc && <p class="desc">{p.desc}</p>}
           </div>
         </article>
@@ -106,28 +117,33 @@ const isExternal = (href: string) => href.startsWith('http');
   </div>
 
   <style>
-    .projects { display: flex; flex-direction: column; gap: 56px; margin-top: 6px; }
-    .project { display: grid; grid-template-columns: 300px 1fr; gap: 30px; align-items: start; }
+    .projects { display: flex; flex-direction: column; gap: 48px; margin-top: 8px; }
+    .project { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
 
     .shot a, .shot img, .shot .ph { display: block; }
-    .shot img {
-      width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 6px;
-    }
+    .shot img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; }
     .ph {
-      width: 100%; aspect-ratio: 3 / 2; border-radius: 6px; background: var(--line);
+      width: 100%; aspect-ratio: 16 / 10; border-radius: 10px; background: var(--line);
       display: flex; align-items: center; justify-content: center;
       color: var(--faint); font-size: 0.9rem;
     }
 
-    .name { font-size: 1.05rem; font-weight: 600; margin: 0 0 3px; }
+    .head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px; margin-top: 2px;
+    }
+    .titleline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .name { font-weight: 600; font-size: 1.05rem; }
     .name a { color: var(--ink); text-decoration: none; }
     .name a:hover { text-decoration: underline; text-underline-offset: 3px; }
-    .meta { color: var(--faint); font-size: 0.82rem; margin: 0 0 10px; }
-    .desc { color: var(--muted); font-size: 0.9rem; margin: 0; max-width: 56ch; }
+    .tagline { color: var(--muted); font-size: 0.92rem; }
+    .date { color: var(--faint); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; }
+
+    .desc { margin: 10px 0 0; color: var(--muted); font-size: 0.92rem; max-width: 62ch; }
 
     @media (max-width: 620px) {
       .project { grid-template-columns: 1fr; gap: 12px; }
-      .shot img, .ph { aspect-ratio: 16 / 9; }
+      .head { flex-direction: column; gap: 2px; }
     }
   </style>
 </Base>

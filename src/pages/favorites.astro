@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+
+// your favorite stuff, loosely sorted into categories (jake-ginesin style).
+// fill this in — each item is { name, href?, note }. href is optional; without
+// one the name just shows as plain text. add/rename categories freely.
+const sections: { title: string; items: { name: string; href?: string; note?: string }[] }[] = [
+  {
+    title: 'reading',
+    items: [
+      // { name: 'the name of the thing', href: 'https://…', note: 'why you love it' },
+    ],
+  },
+  {
+    title: 'tools',
+    items: [],
+  },
+  {
+    title: 'places to eat',
+    items: [],
+  },
+  {
+    title: 'misc',
+    items: [],
+  },
+];
+
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const nonEmpty = sections.filter((s) => s.items.length > 0);
+---
+<Base title="favorite stuff · poshitha">
+  <h1 class="page-title">favorite stuff</h1>
+  <p class="lede">a running list of things i love from around the web, loosely sorted. tell me if a link's broken.</p>
+
+  {nonEmpty.length > 0 ? (
+    <>
+      <nav class="jump">
+        {nonEmpty.map((s) => (
+          <a href={`#${slug(s.title)}`}>{s.title}</a>
+        ))}
+      </nav>
+
+      {nonEmpty.map((s) => (
+        <section class="cat">
+          <h2 id={slug(s.title)}>{s.title}</h2>
+          <ul>
+            {s.items.map((it) => (
+              <li>
+                {it.href ? (
+                  <a href={it.href} target="_blank" rel="noopener">{it.name}</a>
+                ) : (
+                  <span class="name">{it.name}</span>
+                )}
+                {it.note && <span class="note"> — {it.note}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
+  ) : (
+    <p class="muted">coming soon — poshitha's sending over her list.</p>
+  )}
+
+  <style>
+    .jump { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 40px; }
+    .jump a { color: var(--muted); font-size: 0.9rem; }
+
+    .cat { margin: 0 0 36px; }
+    .cat h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; scroll-margin-top: 24px; }
+    .cat ul { list-style: none; margin: 0; padding: 0; }
+    .cat li { padding: 5px 0; font-size: 0.92rem; }
+    .cat .name { color: var(--ink); }
+    .cat .note { color: var(--muted); }
+  </style>
+</Base>
