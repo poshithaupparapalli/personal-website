@@ -20,7 +20,7 @@ const projects = [
     href: '',
     tagline: 'ecg-free heart monitoring',
     meta: 'taebi lab · 2026',
-    desc: '',
+    desc: "every heartbeat makes your chest vibrate a tiny bit, and that vibration carries the exact moment your aortic valve opens, which tells you how well the heart is pumping. the problem is the signal is noisy and looks different on every person, so almost every existing method cheats by using an ecg to find that moment. i'm on a 3-person team in dr. taebi's lab trying to drop the ecg completely. so far i've labeled heartbeats across four datasets, built the tooling that reconciles how our three annotators marked each beat into one ground truth, and we're benchmarking the standard approaches (template matching and a 1d u-net) before training our own model that has to generalize to people it has never seen.",
   },
   {
     name: 'mobile robotics',
@@ -28,7 +28,7 @@ const projects = [
     href: '',
     tagline: 'autonomous robots on real hardware',
     meta: 'cse 360 · 2026',
-    desc: '',
+    desc: "a semester of putting robotics theory on real hardware, all built around one loop: read a noisy world, figure out what's actually true, then act. the main build was a vision-based line follower on a moorebot scout that segments tape by color in hsv, fits a line to it with ransac so bad pixels don't drag the robot off course, and steers with two pid controllers i tuned in simulation before trusting them live. i also built a wall follower for a 30-sonar robot where a quarter of the readings are wrong on purpose, and calibrated a stereo depth pipeline in opencv down to 0.72px reprojection error.",
   },
   {
     name: 'coalesce',
@@ -36,7 +36,7 @@ const projects = [
     href: 'https://github.com/kentneureiter/coalesce',
     tagline: 'keeping coding agents in sync',
     meta: 'aws hackathon · 2026',
-    desc: '',
+    desc: "when a few coding agents work the same repo in parallel, they end up writing against stale code and stepping on each other. coalesce fixes that: claude code hooks capture each branch's diffs, python ast pulls out the function-level changes, and that context gets pushed to the other agents before their conflicting edits ever reach review. we won most innovative project at lehigh's aws hackathon for it.",
   },
   {
     name: 'tara',
@@ -44,7 +44,7 @@ const projects = [
     href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
     tagline: 'can ai learn your taste?',
     meta: 'yc startup school · 2026',
-    desc: '',
+    desc: "can a model actually learn your personal visual taste? tara tests that with pairwise human evaluation: people pick between images, and the system scores how well a model predicts those choices. i built the evaluation harness, the judging ui, and the scoring pipeline for a 25-person live panel, all shipped in 8 hours at yc startup school's hackathon, where it took 2nd place in the terac track.",
   },
   {
     name: 'mia',
@@ -52,7 +52,7 @@ const projects = [
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
     tagline: 'automating the busywork',
     meta: 'hackmit · 2026',
-    desc: '',
+    desc: "most small business owners lose hours a day to repetitive browser busywork: copying invoice totals from gmail into a sheet, cross-referencing tabs, the stuff that should just disappear. mia is a browser companion that watches for those patterns and offers to turn them into one-click automations, so they can work on the business instead of in it. i built the execution agent and the google workspace integration that actually runs the tasks. shipped in 15 hours at hackmit.",
   },
   {
     name: 'resonance',
@@ -60,7 +60,7 @@ const projects = [
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
     tagline: 'a news feed that learns you',
     meta: '2026',
-    desc: '',
+    desc: "staying informed usually means drowning in duplicate coverage from a dozen sources. resonance is a personalized news engine that pulls over 500 articles a day, groups related stories with openai embeddings and leiden graph clustering so you see each thing once, and learns what you actually care about from a short onboarding. i co-founded it, and it sends daily briefings to 50+ readers.",
   },
   {
     name: 'raiseit',
@@ -68,7 +68,7 @@ const projects = [
     href: 'https://github.com/poshithaupparapalli/raiseit',
     tagline: 'tracking raised hands with cv',
     meta: '2025',
-    desc: '',
+    desc: "in a big lecture hall it's hard to catch every raised hand. raiseit is a computer vision system that detects and tracks them in real time with yolov8 and bytetrack. i fine-tuned it on 300+ annotated images and deployed it across five classrooms at lehigh, running inference on a jetson orin nano.",
   },
 ];
 
