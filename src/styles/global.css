@@ -1,13 +1,14 @@
-/* clean. white page, one font, quiet links. that's it. */
+/* clean. graph-paper page, geist, quiet links. that's it. */
 
 /* light, and only light. */
 :root {
-  --bg: #ffffff;
+  --bg: #f7f6f2;
   --ink: #1f2328;
   --muted: #6e7781;
   --faint: #a8b0b9;
-  --line: #eceef0;
+  --line: #e7e6e0;
   --pop: #ffffff;
+  --grid: rgba(71, 85, 105, 0.07);
   color-scheme: light;
 }
 
@@ -16,13 +17,21 @@
 html {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-body { margin: 0; min-height: 100vh; }
+/* the square grid i grew up on — faint graph paper behind everything */
+body {
+  margin: 0; min-height: 100vh;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
 
 /* content links are blue, like the reference; nav/footer links set their own color */
 a { color: #3b5bd6; text-decoration: none; }

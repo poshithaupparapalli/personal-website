@@ -28,13 +28,13 @@ const captions: Record<string, string> = {
 
 const frames = files.map((f) => ({ src: `/photos/${f}`, cap: captions[f] ?? '' }));
 ---
-<Base title="photos · poshitha">
+<Base title="Photos · Poshitha">
   {frames.length > 0 ? (
     <div class="viewer">
       <div class="controls">
-        <button type="button" id="prev">previous</button>
+        <button type="button" id="prev">Previous</button>
         <span class="slash">/</span>
-        <button type="button" id="next">next</button>
+        <button type="button" id="next">Next</button>
         <span class="counter" id="counter"></span>
       </div>
       <figure class="stage">

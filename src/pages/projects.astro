@@ -5,59 +5,59 @@ import Base from '../layouts/Base.astro';
 // newest first.
 const projects = [
   {
-    title: 'ecg-free cardiac event detection',
-    meta: 'taebi lab · 2026',
+    title: 'ECG-independent cardiac event detection',
+    meta: 'Taebi Lab · 2026',
     href: '',
-    desc: 'developing an ecg-independent approach to detecting aortic valve opening (ao) and mitral valve closure (mc) from seismocardiography (scg) signals. on a three-person research team, i developed an annotation reconciliation pipeline to establish ground-truth labels across four datasets and am benchmarking template matching and 1d u-net models for cross-subject generalization.',
+    desc: 'Developing a signal-processing and deep learning pipeline to detect aortic valve opening (AO) and mitral valve closure (MC) directly from seismocardiogram (SCG) recordings, without ECG-based segmentation. Built an annotation reconciliation pipeline across four datasets to establish consensus ground truth from three annotators. Currently evaluating template-matching and 1D U-Net baselines, with a focus on subject-independent evaluation and generalization across variations in cardiac signal morphology.',
   },
   {
-    title: 'autonomous navigation and perception',
-    meta: 'cse 360 · 2026',
+    title: 'Autonomous navigation and perception',
+    meta: 'CSE 360 · 2026',
     href: '',
-    desc: 'implemented autonomous navigation and perception algorithms on robotic platforms, including a vision-based line follower using hsv segmentation, ransac line fitting, and dual pid controllers tuned in simulation. also developed sonar-based wall following under corrupted sensor measurements and calibrated an opencv stereo vision pipeline to 0.72-pixel reprojection error.',
+    desc: 'Implemented a vision-based line-following system on a Moorebot Scout using HSV color segmentation, RANSAC line estimation, and dual PID controllers for closed-loop steering. Developed sonar-based wall following with deliberately corrupted distance measurements, and a calibrated stereo vision pipeline using OpenCV, achieving 0.72-pixel reprojection error.',
   },
   {
-    title: 'multi-agent code synchronization',
-    meta: 'aws hackathon · 2026',
+    title: 'Multi-agent code synchronization',
+    meta: 'AWS Hackathon · 2026',
     href: 'https://github.com/kentneureiter/coalesce',
-    desc: "developed a synchronization system for parallel coding agents to reduce conflicts arising from stale repository state. integrated claude code hooks to capture branch-level diffs, used python ast analysis to identify function-level changes, and distributed relevant updates across agents. awarded most innovative project at lehigh's aws hackathon.",
+    desc: "Built a coordination layer for parallel coding agents operating on shared repositories. Claude Code hooks capture branch-level diffs, Python AST analysis extracts function-level changes, and relevant modifications are propagated between agents to reduce stale-context conflicts before integration. Won Most Innovative Project at Lehigh's AWS Hackathon.",
   },
   {
-    title: 'human preference evaluation for generative ai',
-    meta: 'yc startup school · 2026',
+    title: 'Pairwise human preference evaluation',
+    meta: 'YC Startup School · 2026',
     href: 'https://github.com/kripahsk-29/startup-school-hackathon-2026',
-    desc: "built a pairwise evaluation framework to measure how accurately ai models predict individual visual preferences. developed the judging interface, evaluation harness, and scoring pipeline for a live study with 25 participants. built in eight hours and awarded second place in the terac track at yc startup school's hackathon.",
+    desc: 'Developed an evaluation framework for measuring how accurately generative AI models predict individual visual preferences using pairwise image comparisons. Built the live judging interface, human evaluation harness, and scoring pipeline to compare model predictions against responses from a 25-person panel. Second place in the Terac track.',
   },
   {
-    title: 'agentic browser workflow automation',
-    meta: 'hackmit · 2026',
+    title: 'Agentic browser workflow automation',
+    meta: 'HackMIT · 2026',
     href: 'https://github.com/poshithaupparapalli/hackmit-project2',
-    desc: 'developed a browser-based automation agent that identifies repetitive workflows and enables one-click execution across web applications. implemented the task execution agent and google workspace integrations to automate workflows involving gmail and google sheets. built a working prototype in 15 hours at hackmit.',
+    desc: 'Built a browser-based agent for identifying and executing repetitive workflows across web applications. Developed the task execution layer and Google Workspace integrations to automate multi-step operations involving Gmail and Sheets, transforming repeated browser interactions into reusable, one-click workflows.',
   },
   {
-    title: 'personalized news recommendation and clustering',
+    title: 'Personalized information retrieval and recommendation',
     meta: '2026',
     href: 'https://github.com/poshithaupparapalli/yournewsreal',
-    desc: 'co-founded an ai-powered news platform delivering personalized daily briefings to 50+ readers. built an information retrieval pipeline ingesting 500+ articles daily, using openai embeddings and leiden graph clustering to group related coverage. implemented interest-based recommendation ranking to personalize news feeds from user onboarding preferences.',
+    desc: 'Built a personalized news retrieval pipeline ingesting 500+ articles daily from RSS feeds and the Guardian API. Uses OpenAI embeddings and Leiden community detection on a similarity graph to cluster semantically related coverage, followed by cosine-similarity ranking against user interest vectors derived from free-text onboarding responses. Currently serving 50+ readers through personalized daily briefings.',
   },
   {
-    title: 'scholars of finance family trees',
+    title: 'Scholars of Finance family trees',
     meta: '2026',
     href: 'https://poshithaupparapalli.github.io/SoF-family-trees/',
     desc: '',
   },
   {
-    title: 'real-time hand-raising detection and tracking',
+    title: 'Real-time multi-person detection and tracking',
     meta: '2025–26',
     href: 'https://github.com/poshithaupparapalli/raiseit',
-    desc: 'developed a computer vision system for detecting and tracking raised hands in crowded lecture halls using yolov8.',
+    desc: 'Developed a real-time computer vision pipeline for detecting and tracking raised hands in crowded lecture halls using a fine-tuned YOLOv8 detector for multi-object association.',
   },
 ];
 
 const isExternal = (href: string) => href.startsWith('http');
 ---
-<Base title="projects · poshitha">
-  <h1 class="page-title">projects</h1>
+<Base title="Projects · Poshitha">
+  <h1 class="page-title">Projects</h1>
 
   <ul class="projects">
     {projects.map((p) => {
@@ -79,7 +79,7 @@ const isExternal = (href: string) => href.startsWith('http');
   </ul>
 
   <p class="more">
-    <a href="https://github.com/poshithaupparapalli" target="_blank" rel="noopener">more on github →</a>
+    <a href="https://github.com/poshithaupparapalli" target="_blank" rel="noopener">More on GitHub →</a>
   </p>
 
   <style>
@@ -88,8 +88,8 @@ const isExternal = (href: string) => href.startsWith('http');
     .project:first-child { border-top: none; padding-top: 10px; }
 
     .name {
-      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-weight: 700; font-size: 0.95rem;
+      font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      font-weight: 600; font-size: 0.95rem;
     }
     .name a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
     .name a:hover { color: var(--muted); }
