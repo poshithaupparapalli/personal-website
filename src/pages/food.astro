@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// my beli spots, grouped by city. scores are my beli ratings.
+// my full beli "been" list, grouped by city. scores are my beli ratings.
+// cities ordered by how many spots i've logged there.
 const cities = [
   {
     city: 'San Francisco',
@@ -14,22 +15,71 @@ const cities = [
       { name: 'Khao Tiew', score: 9.6 },
       { name: 'Motoring Coffee', score: 9.5 },
       { name: 'Neighbor Bakehouse', score: 9.4 },
+      { name: 'HEYTEA', score: 9.3 },
       { name: 'Chaat Corner', score: 9.3 },
+      { name: 'Ghirardelli Chocolate Experience', score: 9.2 },
       { name: 'Mr. East Kitchen', score: 9.2 },
       { name: 'Taqueria Cancun', score: 9.2 },
       { name: 'elaichi co. chai house', score: 9.1 },
       { name: 'Horsefeather', score: 9.0 },
       { name: 'Caffe Greco', score: 9.0 },
+      { name: 'Matcha Cafe Maiko', score: 8.9 },
       { name: 'Q Specialty Coffee', score: 8.8 },
       { name: 'Ebiko', score: 8.8 },
       { name: 'Pie Punks', score: 8.8 },
+      { name: 'Powder', score: 8.8 },
       { name: 'Muse Juice Bar', score: 8.7 },
       { name: 'Andytown Coffee Roasters', score: 8.6 },
       { name: 'Crostini & Java', score: 8.6 },
       { name: 'Jandii Cafe', score: 8.5 },
-      { name: 'Atlas Cafe', score: 8.4 },
+      { name: 'Kiss of Matcha', score: 8.5 },
+      { name: 'Ping Yang Thai Grill & Dessert', score: 8.4 },
+      { name: 'Bistro Central Parc', score: 8.4 },
+      { name: 'China Live', score: 8.4 },
       { name: 'Mendocino Farms', score: 8.4 },
+      { name: 'Atlas Cafe', score: 8.4 },
+      { name: 'SOHN', score: 8.3 },
+      { name: 'Il Canto Cafe', score: 8.3 },
       { name: 'LOQUAT', score: 8.1 },
+    ],
+  },
+  {
+    city: 'Tirupati',
+    lat: 13.6288,
+    lng: 79.4192,
+    spots: [
+      { name: 'Cream Stone', score: 9.6 },
+      { name: 'Gufha Restaurant', score: 9.4 },
+      { name: 'Minerva Coffee Shop', score: 9.2 },
+      { name: 'Fire and Feast Restaurant', score: 9.1 },
+      { name: 'The Paradise Family Restaurant', score: 9.1 },
+      { name: 'Blue Fox', score: 9.1 },
+      { name: 'Southern Spice', score: 9.1 },
+      { name: 'Jalpaan Veg Restaurant', score: 9.0 },
+      { name: 'zamzam restaurant', score: 9.0 },
+      { name: 'THE PEACH DOOR', score: 8.9 },
+      { name: 'Ekante Bliss — IHCL SeleQtions', score: 8.9 },
+      { name: 'Di Table 9 Multicuisine', score: 8.8 },
+      { name: 'Di Royal Andhra Spice', score: 8.6 },
+      { name: 'Chillies Restaurant', score: 8.5 },
+      { name: 'Tabun An Arabic Restaurant', score: 8.5 },
+      { name: 'PS4 Pure Veg Restaurant', score: 8.5 },
+      { name: 'Mayura Bakery', score: 8.3 },
+      { name: 'Zodiac Multicuisine Restaurant', score: 7.6 },
+    ],
+  },
+  {
+    city: 'Hyderabad',
+    lat: 17.385,
+    lng: 78.4867,
+    spots: [
+      { name: 'Indulge Ice Cream', score: 9.9 },
+      { name: 'IGURU Banquets & Restaurant', score: 9.8 },
+      { name: 'Blue Fox', score: 9.7 },
+      { name: 'Cafe Niloufer Premium Lounge', score: 9.2 },
+      { name: 'Cafe Bahar', score: 9.2 },
+      { name: 'Roastery Coffee House', score: 9.0 },
+      { name: 'Theobroma Bakery and Cake Shop', score: 8.9 },
     ],
   },
   {
@@ -41,6 +91,41 @@ const cities = [
       { name: 'Lan Larb Chiang Mai', score: 9.9 },
       { name: 'TONCHIN New York', score: 9.9 },
       { name: 'bb.q Chicken NY K Town', score: 9.9 },
+      { name: 'Anita La Mamma del Gelato', score: 9.7 },
+      { name: 'LOS TACOS No.1', score: 9.5 },
+      { name: 'Tous Les Jours', score: 9.2 },
+      { name: "Umberto's of New Hyde Park", score: 8.8 },
+      { name: 'Chomp Chomp Thai Kitchen', score: 8.3 },
+    ],
+  },
+  {
+    city: 'Bethlehem',
+    lat: 40.6259,
+    lng: -75.3705,
+    spots: [
+      { name: 'La Kang Chicken and Rice', score: 9.6 },
+      { name: 'Mediterranean Grill', score: 9.5 },
+      { name: "Bitty & Beau's Coffee", score: 9.4 },
+      { name: 'Korean Street Food', score: 9.4 },
+      { name: 'Wonder Kitchen', score: 9.4 },
+      { name: 'Lit Coffee Roastery & Bakeshop', score: 9.3 },
+      { name: 'Thai Kitchen', score: 9.3 },
+      { name: 'ShangWei Szechuan', score: 9.3 },
+      { name: 'The Goosemen', score: 8.7 },
+    ],
+  },
+  {
+    city: 'Boston',
+    lat: 42.3601,
+    lng: -71.0589,
+    spots: [
+      { name: 'Levain Bakery — Back Bay', score: 9.7 },
+      { name: 'Barcelona Wine Bar', score: 9.6 },
+      { name: 'Oleana', score: 9.0 },
+      { name: 'Bluestone Lane Harvard Square', score: 8.9 },
+      { name: 'Shanti Restaurant — Dorchester', score: 8.7 },
+      { name: "Felipe's Taqueria", score: 8.6 },
+      { name: 'Cactus Club Cafe', score: 8.5 },
     ],
   },
   {
@@ -48,32 +133,72 @@ const cities = [
     lat: 43.2389,
     lng: 76.8897,
     spots: [
-      { name: 'Marmaris Restoran', score: 9.8 },
       { name: 'Chickodelli', score: 9.8 },
+      { name: 'Marmaris Restoran', score: 9.8 },
+      { name: 'URBO coffee', score: 9.8 },
       { name: 'Agosto Coffee', score: 9.7 },
       { name: 'Vanilla на Курмангазы', score: 9.7 },
+      { name: 'Arizona Coffee', score: 9.2 },
     ],
-  },
-  {
-    city: 'Hyderabad',
-    lat: 17.385,
-    lng: 78.4867,
-    spots: [{ name: 'IGURU Banquets & Restaurant', score: 9.8 }],
   },
   {
     city: 'Chennai',
     lat: 13.0827,
     lng: 80.2707,
-    spots: [{ name: 'Fattoush Restaurant & Banquet', score: 9.8 }],
+    spots: [
+      { name: 'Fattoush Restaurant & Banquet', score: 9.8 },
+      { name: 'Mount Road Bilal at ECR', score: 9.7 },
+      { name: 'Junior Kuppanna — Guindy', score: 9.4 },
+      { name: 'Food Village', score: 9.3 },
+    ],
+  },
+  {
+    city: 'Puducherry',
+    lat: 11.9416,
+    lng: 79.8083,
+    spots: [
+      { name: 'Express Cuisine', score: 9.5 },
+      { name: 'Bread & Chocolate', score: 8.6 },
+    ],
+  },
+  {
+    city: 'Hellertown',
+    lat: 40.5795,
+    lng: -75.3407,
+    spots: [{ name: 'La Kang Thai Noodles Bar', score: 9.6 }],
+  },
+  {
+    city: 'Easton',
+    lat: 40.6884,
+    lng: -75.2207,
+    spots: [{ name: 'Owowcow Creamery', score: 8.7 }],
+  },
+  {
+    city: 'Bengaluru',
+    lat: 12.9716,
+    lng: 77.5946,
+    spots: [{ name: 'Meghana Foods — Indiranagar', score: 8.6 }],
+  },
+  {
+    city: 'Abu Dhabi',
+    lat: 24.4539,
+    lng: 54.3773,
+    spots: [{ name: 'Yasmin Sweets & Restaurant', score: 9.7 }],
+  },
+  {
+    city: 'Sacramento',
+    lat: 38.5816,
+    lng: -121.4944,
+    spots: [{ name: 'Cariño', score: 9.5 }],
   },
 ];
 
-// markers for the globe, sized a touch by how many spots the city has
-const markers = cities.map((c) => ({ lat: c.lat, lng: c.lng, size: 0.04 + Math.min(c.spots.length, 20) * 0.004 }));
+const totalSpots = cities.reduce((n, c) => n + c.spots.length, 0);
+const markers = cities.map((c) => ({ lat: c.lat, lng: c.lng, size: 0.035 + Math.min(c.spots.length, 24) * 0.0035 }));
 ---
 <Base title="Food · Poshitha">
   <h1 class="page-title">Food</h1>
-  <p class="lede">Everywhere I've eaten and loved, ranked. Scores are my <a href="https://beliapp.co/app/poshi" target="_blank" rel="noopener">Beli</a> ratings.</p>
+  <p class="lede">Everywhere I've eaten and loved — {totalSpots} spots across {cities.length} cities, ranked. Scores are my <a href="https://beliapp.co/app/poshi" target="_blank" rel="noopener">Beli</a> ratings.</p>
 
   <div class="globe-wrap">
     <canvas id="globe" aria-label="a globe marking the cities where i've eaten"></canvas>
@@ -117,7 +242,6 @@ const markers = cities.map((c) => ({ lat: c.lat, lng: c.lng, size: 0.04 + Math.m
 
   <script>
     import createGlobe from 'cobe';
-
     const canvas = document.getElementById('globe') as HTMLCanvasElement | null;
     const data = (window as any).__CITIES__ as { lat: number; lng: number; size: number }[];
     if (canvas && data) {
@@ -126,8 +250,7 @@ const markers = cities.map((c) => ({ lat: c.lat, lng: c.lng, size: 0.04 + Math.m
       const onResize = () => { width = canvas.offsetWidth; };
       window.addEventListener('resize', onResize);
       onResize();
-
-      const globe = createGlobe(canvas, {
+      createGlobe(canvas, {
         devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
         width: width * 2,
         height: width * 2,
