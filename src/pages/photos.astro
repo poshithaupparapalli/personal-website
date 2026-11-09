@@ -2,51 +2,62 @@
 import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 
-// full-size photos live in public/photos; small thumbs in public/photos/thumbs.
+// full-size in public/photos, small thumbs in public/photos/thumbs.
 const dir = 'public/photos';
 const files = fs.existsSync(dir)
   ? fs.readdirSync(dir).filter((f) => /\.(jpe?g|png|webp)$/i.test(f)).sort()
   : [];
-
 const thumb = (f: string) =>
   fs.existsSync(`${dir}/thumbs/${f}`) ? `/photos/thumbs/${f}` : `/photos/${f}`;
+
+// seeded rng so the scatter is varied but stable between builds
+const rng = (() => {
+  let s = 20260211;
+  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+})();
+
+// scatter them across a loose grid, with jitter + rotation so they float
+const COLS = 3;
+const ROW_H = 340;
+const items = files.map((f, i) => {
+  const col = i % COLS;
+  const row = Math.floor(i / COLS);
+  const left = ((col + 0.5) / COLS) * 100 + (rng() * 12 - 6);
+  const top = 20 + row * ROW_H + Math.round(rng() * 90 - 45);
+  const width = 210 + Math.round(rng() * 120); // 210–330px
+  const rot = (rng() * 9 - 4.5).toFixed(1); // ±4.5deg
+  return { f, left, top, width, rot };
+});
+const canvasH = 20 + Math.ceil(files.length / COLS) * ROW_H + 80;
+
+let css = `
+.scatter { display:flex; flex-direction:column; align-items:center; gap:22px; margin-top:8px; }
+.scatter .ph { margin:0; }
+.scatter .ph img { width:100%; height:auto; display:block; border-radius:3px; box-shadow:0 3px 16px rgba(40,45,60,0.12); }
+@media (max-width:759px){ .scatter .ph{ width:74%; max-width:320px; } }
+@media (min-width:760px){
+  .scatter{ width:100vw; position:relative; left:50%; margin-left:-50vw; height:${canvasH}px; display:block; }
+  .scatter .ph{ position:absolute; transition:transform .25s ease; }
+`;
+items.forEach((it, i) => {
+  css += `.scatter .ph:nth-child(${i + 1}){left:${it.left.toFixed(2)}%;top:${it.top}px;width:${it.width}px;transform:translateX(-50%) rotate(${it.rot}deg);}\n`;
+});
+css += `.scatter .ph:hover{ transform:translateX(-50%) rotate(0deg) scale(1.04); z-index:5; }\n}`;
 ---
 <Base title="Photos · Poshitha">
-  <h1 class="page-title">Photos</h1>
-
   {files.length > 0 ? (
-    <ul class="grid">
-      {files.map((f, i) => (
-        <li class="cell">
-          <a href={`/photos/${f}`} target="_blank" rel="noopener">
-            <div class="frame"><img src={thumb(f)} alt="" loading="lazy" /></div>
+    <div class="scatter">
+      {items.map((it) => (
+        <figure class="ph">
+          <a href={`/photos/${it.f}`} target="_blank" rel="noopener">
+            <img src={thumb(it.f)} alt="" loading="lazy" />
           </a>
-          <div class="num">({i + 1})</div>
-        </li>
+        </figure>
       ))}
-    </ul>
+    </div>
   ) : (
     <p class="muted">no photos yet.</p>
   )}
 
-  <style>
-    .grid {
-      list-style: none; margin: 0; padding: 0 0 40px;
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px 18px;
-    }
-    .cell { margin: 0; }
-    .frame {
-      aspect-ratio: 1 / 1; overflow: hidden; background: var(--line); border-radius: 2px;
-    }
-    .frame img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: opacity 0.2s ease;
-    }
-    .cell a:hover .frame img { opacity: 0.9; }
-    .num { text-align: center; margin-top: 10px; color: var(--muted); font-size: 0.8rem; }
-
-    @media (max-width: 640px) {
-      .grid { grid-template-columns: repeat(2, 1fr); gap: 24px 12px; }
-    }
-  </style>
+  <style set:html={css}></style>
 </Base>
