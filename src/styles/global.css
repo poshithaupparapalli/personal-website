@@ -23,15 +23,7 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* the square grid i grew up on — faint graph paper behind everything */
-body {
-  margin: 0; min-height: 100vh;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(to right, var(--grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
+body { margin: 0; min-height: 100vh; background-color: var(--bg); }
 
 /* content links are blue, like the reference; nav/footer links set their own color */
 a { color: #3b5bd6; text-decoration: none; }
