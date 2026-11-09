@@ -2,7 +2,14 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Poshitha Upparapalli">
-  <h1>Poshitha Upparapalli</h1>
+  <div class="hero">
+    <h1>Poshitha Upparapalli</h1>
+    <div class="select" aria-hidden="true">
+      <span class="h tl"></span><span class="h tm"></span><span class="h tr"></span>
+      <span class="h ml"></span><span class="h mr"></span>
+      <span class="h bl"></span><span class="h bm"></span><span class="h br"></span>
+    </div>
+  </div>
 
   <div class="intro">
     <ul class="links">
@@ -55,7 +62,48 @@ import Base from '../layouts/Base.astro';
   </div>
 
   <style>
-    h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 20px; }
+    /* name sits inside a "selection" that snaps its handles in on load, then releases */
+    .hero { position: relative; display: inline-block; margin: 0 0 20px; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin: 0; }
+
+    .select {
+      position: absolute; inset: -9px -12px; border: 1px solid #3b5bd6;
+      opacity: 0; pointer-events: none;
+      animation: selbox 1.3s ease forwards;
+    }
+    .select .h {
+      position: absolute; width: 7px; height: 7px;
+      background: #fff; border: 1px solid #3b5bd6;
+      transform: scale(0);
+      animation: handle 1.3s ease forwards;
+    }
+    .tl { top: -4px; left: -4px; }
+    .tm { top: -4px; left: calc(50% - 3.5px); }
+    .tr { top: -4px; right: -4px; }
+    .ml { top: calc(50% - 3.5px); left: -4px; }
+    .mr { top: calc(50% - 3.5px); right: -4px; }
+    .bl { bottom: -4px; left: -4px; }
+    .bm { bottom: -4px; left: calc(50% - 3.5px); }
+    .br { bottom: -4px; right: -4px; }
+    /* tiny stagger so the handles snap in one after another */
+    .tl { animation-delay: 0s; }
+    .tr { animation-delay: 0.04s; }
+    .bl { animation-delay: 0.08s; }
+    .br { animation-delay: 0.12s; }
+    .tm, .bm, .ml, .mr { animation-delay: 0.16s; }
+
+    @keyframes selbox {
+      0% { opacity: 0; } 18% { opacity: 1; } 64% { opacity: 1; } 100% { opacity: 0; }
+    }
+    @keyframes handle {
+      0% { transform: scale(0); opacity: 1; }
+      22% { transform: scale(1); }
+      64% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .select { display: none; }
+    }
     .intro { display: flex; align-items: center; gap: 24px; margin: 0 0 32px; }
     .links { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 16px; }
     .links a { color: var(--muted); display: inline-flex; }
