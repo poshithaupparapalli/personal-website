@@ -1,63 +1,154 @@
 ---
 import Base from '../layouts/Base.astro';
-import spots from '../data/food.json';
 
-const cities = [...new Set(spots.map((s) => s.city))];
+// my beli spots, grouped by city. scores are my beli ratings.
+const cities = [
+  {
+    city: 'San Francisco',
+    lat: 37.7749,
+    lng: -122.4194,
+    spots: [
+      { name: 'Equator Coffees', score: 10.0 },
+      { name: 'Marufuku Ramen', score: 9.9 },
+      { name: 'The Interval at Long Now', score: 9.9 },
+      { name: 'Khao Tiew', score: 9.6 },
+      { name: 'Motoring Coffee', score: 9.5 },
+      { name: 'Neighbor Bakehouse', score: 9.4 },
+      { name: 'Chaat Corner', score: 9.3 },
+      { name: 'Mr. East Kitchen', score: 9.2 },
+      { name: 'Taqueria Cancun', score: 9.2 },
+      { name: 'elaichi co. chai house', score: 9.1 },
+      { name: 'Horsefeather', score: 9.0 },
+      { name: 'Caffe Greco', score: 9.0 },
+      { name: 'Q Specialty Coffee', score: 8.8 },
+      { name: 'Ebiko', score: 8.8 },
+      { name: 'Pie Punks', score: 8.8 },
+      { name: 'Muse Juice Bar', score: 8.7 },
+      { name: 'Andytown Coffee Roasters', score: 8.6 },
+      { name: 'Crostini & Java', score: 8.6 },
+      { name: 'Jandii Cafe', score: 8.5 },
+      { name: 'Atlas Cafe', score: 8.4 },
+      { name: 'Mendocino Farms', score: 8.4 },
+      { name: 'LOQUAT', score: 8.1 },
+    ],
+  },
+  {
+    city: 'New York',
+    lat: 40.7128,
+    lng: -74.006,
+    spots: [
+      { name: 'Pranakhon', score: 10.0 },
+      { name: 'Lan Larb Chiang Mai', score: 9.9 },
+      { name: 'TONCHIN New York', score: 9.9 },
+      { name: 'bb.q Chicken NY K Town', score: 9.9 },
+    ],
+  },
+  {
+    city: 'Almaty',
+    lat: 43.2389,
+    lng: 76.8897,
+    spots: [
+      { name: 'Marmaris Restoran', score: 9.8 },
+      { name: 'Chickodelli', score: 9.8 },
+      { name: 'Agosto Coffee', score: 9.7 },
+      { name: 'Vanilla на Курмангазы', score: 9.7 },
+    ],
+  },
+  {
+    city: 'Hyderabad',
+    lat: 17.385,
+    lng: 78.4867,
+    spots: [{ name: 'IGURU Banquets & Restaurant', score: 9.8 }],
+  },
+  {
+    city: 'Chennai',
+    lat: 13.0827,
+    lng: 80.2707,
+    spots: [{ name: 'Fattoush Restaurant & Banquet', score: 9.8 }],
+  },
+];
+
+// markers for the globe, sized a touch by how many spots the city has
+const markers = cities.map((c) => ({ lat: c.lat, lng: c.lng, size: 0.04 + Math.min(c.spots.length, 20) * 0.004 }));
 ---
-<Base title="food map · poshitha">
-  <h1 class="page-title">food</h1>
-  <p class="lede">coming soon. {spots.length} spots across {cities.length} cities.</p>
+<Base title="Food · Poshitha">
+  <h1 class="page-title">Food</h1>
+  <p class="lede">Everywhere I've eaten and loved, ranked. Scores are my <a href="https://beliapp.co/app/poshi" target="_blank" rel="noopener">Beli</a> ratings.</p>
 
-  <div class="map-frame"><div id="map" class="map"></div></div>
+  <div class="globe-wrap">
+    <canvas id="globe" aria-label="a globe marking the cities where i've eaten"></canvas>
+  </div>
 
-  <ul class="ledger">
-    {spots.map((s, i) => (
-      <li>
-        <span class="no mono">{String(i + 1).padStart(2, '0')}</span>
-        <span class="body">
-          <strong>{s.name}</strong>
-          <span class="note">, {s.note}</span>
-        </span>
-        <span class="meta mono">{s.city}</span>
-      </li>
+  <div class="cities">
+    {cities.map((c) => (
+      <section class="city">
+        <h2>{c.city} <span class="count">{c.spots.length}</span></h2>
+        <ul>
+          {c.spots.map((s) => (
+            <li>
+              <span class="spot">{s.name}</span>
+              <span class="score">{s.score.toFixed(1)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     ))}
-  </ul>
+  </div>
 
-  <script type="application/json" id="spots-data" set:html={JSON.stringify(spots)} />
+  <style>
+    .globe-wrap { width: 100%; max-width: 440px; margin: 10px auto 44px; aspect-ratio: 1; }
+    #globe { width: 100%; height: 100%; display: block; cursor: grab; }
+
+    .cities { display: grid; gap: 40px; }
+    .city h2 {
+      font-size: 1.05rem; font-weight: 600; margin: 0 0 12px;
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .city .count { color: var(--faint); font-size: 0.8rem; font-weight: 400; }
+    .city ul { list-style: none; margin: 0; padding: 0; }
+    .city li {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--line); max-width: 54ch;
+    }
+    .city li:last-child { border-bottom: none; }
+    .spot { color: var(--ink); }
+    .score { color: #2e7d53; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+  </style>
 
   <script>
-    import L from 'leaflet';
-    import 'leaflet/dist/leaflet.css';
+    import createGlobe from 'cobe';
 
-    const spots = JSON.parse(document.getElementById('spots-data')!.textContent!);
-    const map = L.map('map', { scrollWheelZoom: false, worldCopyJump: true });
+    const canvas = document.getElementById('globe') as HTMLCanvasElement | null;
+    const data = (window as any).__CITIES__ as { lat: number; lng: number; size: number }[];
+    if (canvas && data) {
+      let phi = 0;
+      let width = 0;
+      const onResize = () => { width = canvas.offsetWidth; };
+      window.addEventListener('resize', onResize);
+      onResize();
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      className: 'map-tiles',
-      maxZoom: 19,
-    }).addTo(map);
-
-    const pts: [number, number][] = [];
-    for (const s of spots) {
-      pts.push([s.lat, s.lng]);
-      L.marker([s.lat, s.lng], {
-        icon: L.divIcon({
-          className: 'pin',
-          html: `<span class="pin-dot"></span><span class="pin-label">${s.name}</span>`,
-          iconAnchor: [6, 6],
-        }),
-      })
-        .addTo(map)
-        .bindPopup(
-          `<p class="popup-country">${s.name}</p><p class="popup-item">${s.note}<br><span class="yr">${s.city}</span></p>`
-        );
+      const globe = createGlobe(canvas, {
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        width: width * 2,
+        height: width * 2,
+        phi: 0,
+        theta: 0.3,
+        dark: 0,
+        diffuse: 1.1,
+        mapSamples: 16000,
+        mapBrightness: 7,
+        baseColor: [0.9, 0.9, 0.92],
+        markerColor: [0.91, 0.45, 0.18],
+        glowColor: [1, 1, 1],
+        markers: data.map((m) => ({ location: [m.lat, m.lng], size: m.size })),
+        onRender: (state: any) => {
+          state.phi = phi;
+          phi += 0.003;
+          state.width = width * 2;
+          state.height = width * 2;
+        },
+      });
     }
-    if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.3));
-    else map.setView([20, 0], 2);
-
-    // leaflet measures before the layout settles and leaves a gap up top
-    requestAnimationFrame(() => map.invalidateSize());
-    window.addEventListener('load', () => map.invalidateSize());
   </script>
+  <script is:inline set:html={`window.__CITIES__ = ${JSON.stringify(markers)};`}></script>
 </Base>
